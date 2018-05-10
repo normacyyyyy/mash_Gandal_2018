@@ -6,4 +6,6 @@ output:
     toc: false
 ---
 
-Welcome to my research website.
+Application of `mash` on Gandal, Michael J., et al. "Shared molecular neuropathology across major psychiatric disorders parallels polygenic overlap." Science 359.6376 (2018): 693-697. 
+
+Mash Commonbaseline: [mash commonbaseline EE](MashCommonbaseline.html)
