@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Yuxin Zou" />
+
+
+<title>Mashcommonbaseline</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-4.5.0/css/font-awesome.min.css" rel="stylesheet" />
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">mash_Gandal_2018</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/jdblischak/workflowr">
+    <span class="fa fa-github"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Mashcommonbaseline</h1>
+<h4 class="author"><em>Yuxin Zou</em></h4>
+<h4 class="date"><em>2018-5-9</em></h4>
+
+</div>
+
+
+<p><strong>Last updated:</strong> 2018-05-10</p>
+<strong>workflowr checks:</strong> <small>(Click a bullet for more information)</small>
+<ul>
+<li>
+<p><details> <summary> <strong style="color:blue;">✔</strong> <strong>R Markdown file:</strong> up-to-date </summary></p>
+<p>Great! Since the R Markdown file has been committed to the Git repository, you know the exact version of the code that produced these results.</p>
+</details>
+</li>
+<li>
+<p><details> <summary> <strong style="color:blue;">✔</strong> <strong>Environment:</strong> empty </summary></p>
+<p>Great job! The global environment was empty. Objects defined in the global environment can affect the analysis in your R Markdown file in unknown ways. For reproduciblity it’s best to always run the code in an empty environment.</p>
+</details>
+</li>
+<li>
+<p><details> <summary> <strong style="color:blue;">✔</strong> <strong>Seed:</strong> <code>set.seed(20180510)</code> </summary></p>
+<p>The command <code>set.seed(20180510)</code> was run prior to running the code in the R Markdown file. Setting a seed ensures that any results that rely on randomness, e.g. subsampling or permutations, are reproducible.</p>
+</details>
+</li>
+<li>
+<p><details> <summary> <strong style="color:blue;">✔</strong> <strong>Session information:</strong> recorded </summary></p>
+<p>Great job! Recording the operating system, R version, and package versions is critical for reproducibility.</p>
+</details>
+</li>
+<li>
+<p><details> <summary> <strong style="color:blue;">✔</strong> <strong>Repository version:</strong> <a href="https://github.com/zouyuxin/mash_Gandal_2018/tree/fc22b3f61d78e62c86f8ff129074515b1e20bdf1" target="_blank">fc22b3f</a> </summary></p>
+Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
+<pre><code>
+Ignored files:
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+
+Untracked files:
+    Untracked:  .DS_Store
+    Untracked:  analysis/chunks.R
+    Untracked:  code/Microarray_AAD_Mayfield.R
+    Untracked:  code/Microarray_ASD_Chow.R
+    Untracked:  code/Microarray_ASD_Garbett.R
+    Untracked:  code/Microarray_ASD_Voineagu.R
+    Untracked:  code/Microarray_All_GLM.R
+    Untracked:  code/Microarray_IBD_Granlund.R
+    Untracked:  code/Microarray_IBD_Noble.R
+    Untracked:  code/Microarray_MDD_Sibille.R
+    Untracked:  code/Microarray_SCZ_BD_Chen.R
+    Untracked:  code/Microarray_SCZ_BD_Iwa.R
+    Untracked:  code/Microarray_SCZ_BD_MDD_Lanz.R
+    Untracked:  code/Microarray_SCZ_Maycox.R
+    Untracked:  code/Microarray_SCZ_Narayan.R
+    Untracked:  data/.DS_Store
+    Untracked:  data/raw_data/
+    Untracked:  data/results/
+    Untracked:  data/working_data/
+    Untracked:  output/MashCB_EE_Cov.rds
+    Untracked:  output/MashCB_model_EE.rds
+
+</code></pre>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not included in this status report because it is ok for generated content to have uncommitted changes. </details>
+</li>
+</ul>
+<details> <summary> <small><strong>Expand here to see past versions:</strong></small> </summary>
+<ul>
+<table style="border-collapse:separate; border-spacing:5px;">
+<thead>
+<tr>
+<th style="text-align:left;">
+File
+</th>
+<th style="text-align:left;">
+Version
+</th>
+<th style="text-align:left;">
+Author
+</th>
+<th style="text-align:left;">
+Date
+</th>
+<th style="text-align:left;">
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Rmd
+</td>
+<td style="text-align:left;">
+<a href="https://github.com/zouyuxin/mash_Gandal_2018/blob/fc22b3f61d78e62c86f8ff129074515b1e20bdf1/analysis/MashCommonbaseline.Rmd" target="_blank">fc22b3f</a>
+</td>
+<td style="text-align:left;">
+zouyuxin
+</td>
+<td style="text-align:left;">
+2018-05-10
+</td>
+<td style="text-align:left;">
+wflow_publish(“analysis/MashCommonbaseline.Rmd”)
+</td>
+</tr>
+</tbody>
+</table>
+</ul>
+<p></details></p>
+<hr />
+<!-- Update knitr chunk options -->
+<!-- Insert the date the file was last updated -->
+<p><strong>Last updated:</strong> 2018-05-10</p>
+<!-- Insert the code version (Git commit SHA1) if Git repository exists and R
+ package git2r is installed -->
+<p><strong>Code version:</strong> fc22b3f</p>
+<pre class="r"><code>library(limma); library(mashr); library(mclust); library(plyr);</code></pre>
+<pre><code>Loading required package: ashr</code></pre>
+<pre><code>Package &#39;mclust&#39; version 5.4
+Type &#39;citation(&quot;mclust&quot;)&#39; for citing this R package in publications.</code></pre>
+<pre><code>
+Attaching package: &#39;mclust&#39;</code></pre>
+<pre><code>The following object is masked from &#39;package:ashr&#39;:
+
+    dens</code></pre>
+<pre class="r"><code>library(flashr); library(colorRamps); library(corrplot)</code></pre>
+<pre><code>corrplot 0.84 loaded</code></pre>
+<p>Implement <code>mash</code> on John’s data at time point 18.</p>
+<pre class="r"><code>data = readRDS(&#39;data/results/Microarray_compiledGLM.rds&#39;)</code></pre>
+<div id="mash" class="section level1">
+<h1>Mash</h1>
+<p>The standard errors in the data are from t distribution with df 733. Since <code>pt(-abs(Bhat/Shat), df)</code> is very close to zero, it is hard to obtain the standard error from the normal distribution. The degree of freedom is large here, we use the original standard error.</p>
+<pre class="r"><code>mash.data = mash_set_data(Bhat = data$Chat, Shat = data$SE)
+L = diag(ncol(data$Chat))
+# the 4th col is CTL
+L[,4] = -1
+row.names(L) = colnames(data$Chat)
+L = L[-4,]
+mash.data.diff = mash_set_data_contrast(mash.data, L)</code></pre>
+<p>Top genes:</p>
+<pre class="r"><code># find strong genes
+m.1by1 = mash_1by1(mash.data.diff, alpha=0)
+strong = get_significant_results(m.1by1)
+Z = mash.data.diff$Bhat/mash.data.diff$Shat
+Z.strong = Z[strong,]
+# center
+Z.center = apply(Z.strong, 2, function(x) x - mean(x))</code></pre>
+<div id="estimate-covariance-structures" class="section level2">
+<h2>Estimate covariance structures:</h2>
+<p>Data Driven:</p>
+<p>Flash:</p>
+<pre class="r"><code>flash.data = flash_set_data(Z.center)
+fmodel = flash(flash.data, greedy = TRUE, backfit = TRUE)</code></pre>
+<pre><code>fitting factor/loading 1</code></pre>
+<pre><code>fitting factor/loading 2</code></pre>
+<pre><code>fitting factor/loading 3</code></pre>
+<pre><code>fitting factor/loading 4</code></pre>
+<pre class="r"><code>factors = flash_get_ldf(fmodel)$f
+row.names(factors) = row.names(L)
+pve.order = order(flash_get_pve(fmodel), decreasing = TRUE)
+
+par(mfrow=c(1,3))
+for(i in pve.order){
+  barplot(factors[,i], main=paste0(&#39;Factor &#39;,i, &#39; pve= &#39;, round(flash_get_pve(fmodel)[i],3)), las=2, cex.names = 0.7)
+}</code></pre>
+<p><img src="figure/MashCommonbaseline.Rmd/flash%20plot-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>par(mfrow=c(1,1))</code></pre>
+<p><code>flash</code> on the loading:</p>
+<pre class="r"><code>loading = fmodel$EL[,1:3]
+colnames(loading) = paste0(&#39;Factor&#39;,seq(1,3))
+flash.loading = flash_set_data(loading)
+flmodel = flash(flash.loading, greedy = TRUE, backfit = TRUE)</code></pre>
+<pre><code>fitting factor/loading 1</code></pre>
+<p>The flash prefers the rank 0 model. There is no hidden structure in the loading matrix.</p>
+<p>Cluster loadings:</p>
+<pre class="r"><code>mod = Mclust(loading)
+summary(mod$BIC)</code></pre>
+<pre><code>Best BIC values:
+             VVI,9         VVE,9       VVV,9
+BIC      -39480.53 -39486.265635 -39619.0773
+BIC diff      0.00     -5.738225   -138.5499</code></pre>
+<p>Using clustering result to fit <code>mash</code>:</p>
+<p><span class="math display">\[l_{i}\sim \sum_{j=1}^{m}N(\mu_{j}, \Sigma_{j})\]</span> We estimate the covariance as <span class="math inline">\(F(\Sigma_j + \mu_{j}\mu_{j}&#39;)F&#39;\)</span>.</p>
+<pre class="r"><code>U_list = alply(mod$parameters$variance$sigma,3)
+mu_list = alply(mod$parameters$mean,2)
+ll = list()
+for (i in 1:length(U_list)){
+  ll[[i]] = U_list[[i]] + mu_list[[i]] %*% t(mu_list[[i]])
+}
+
+Factors = fmodel$EF[,1:3]
+U.loading = lapply(ll, function(U){Factors %*% (U %*% t(Factors))})
+names(U.loading) = paste0(&#39;Load&#39;, &quot;_&quot;, (1:length(U.loading)))
+
+# rank 1
+Flash_res = flash_get_lf(fmodel)
+U.Flash = c(mashr::cov_from_factors(t(as.matrix(factors)), &quot;Flash&quot;), 
+            list(&quot;tFlash&quot; = t(Flash_res) %*% Flash_res / nrow(Z.center)))</code></pre>
+<p>PCA:</p>
+<pre class="r"><code>U.pca = cov_pca(mash_set_data(Z.center), 3)</code></pre>
+<p>Canonical</p>
+<pre class="r"><code>U.c = cov_canonical(mash_set_data(Z.center))</code></pre>
+<p>Extreme Deconvolution</p>
+<pre class="r"><code>U.dd = c(U.pca, U.loading, U.Flash, list(&#39;XX&#39; = t(Z.center) %*% Z.center / nrow(Z.center)))
+
+mash.data.ed = mash.data.diff
+mash.data.ed$Bhat = mash.data.diff$Bhat[strong,]
+mash.data.ed$Shat = mash.data.diff$Shat[strong,]
+mash.data.ed$Shat_alpha = mash.data.diff$Shat_alpha[strong,]
+saveRDS(cov_ed(mash.data.ed, U.dd), &#39;output/MashCB_EE_Cov.rds&#39;)</code></pre>
+</div>
+<div id="mash-model" class="section level2">
+<h2>Mash model:</h2>
+<pre class="r"><code>U.ed = readRDS(&#39;output/MashCB_EE_Cov.rds&#39;)</code></pre>
+<pre class="r"><code>saveRDS(mash(mash.data.diff, c(U.c, U.ed), algorithm.version = &#39;R&#39;), &#39;output/MashCB_model_EE.rds&#39;) </code></pre>
+</div>
+</div>
+<div id="result" class="section level1">
+<h1>Result</h1>
+<pre class="r"><code>mash.model = readRDS(&#39;output/MashCB_model_EE.rds&#39;)</code></pre>
+<p>The log-likelihood of fit is</p>
+<pre class="r"><code>get_loglik(mash.model)</code></pre>
+<pre><code>[1] 63723.63</code></pre>
+<p>Here is a plot of weights learned:</p>
+<pre class="r"><code>options(repr.plot.width=12, repr.plot.height=4)
+barplot(get_estimated_pi(mash.model), las = 2, cex.names = 0.7)</code></pre>
+<p><img src="figure/MashCommonbaseline.Rmd/estimated%20weight-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Check tPCA covariance matrix</p>
+<pre class="r"><code>x           &lt;- mash.model$fitted_g$Ulist[[&quot;ED_tPCA&quot;]]
+colnames(x) &lt;- row.names(L)
+rownames(x) &lt;- colnames(x)
+corrplot(x, method=&#39;color&#39;, cl.lim=c(-0.1,1), type=&#39;upper&#39;, addCoef.col = &quot;black&quot;, tl.col=&quot;black&quot;, tl.srt=45, col=colorRampPalette(c(&quot;blue&quot;,&quot;white&quot;,&quot;red&quot;))(200))</code></pre>
+<p><img src="figure/MashCommonbaseline.Rmd/tPCA-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>layout(matrix(c(1,2,3,4), 2, 2, byrow=TRUE))
+svd.out = svd(mash.model$fitted_g$Ulist[[&quot;ED_tPCA&quot;]])
+v = svd.out$v
+colnames(v) = row.names(L)
+rownames(v) = colnames(v)
+options(repr.plot.width=10, repr.plot.height=5)
+for (j in 1:4)
+  barplot(v[,j]/v[,j][which.max(abs(v[,j]))], cex.names = 0.7,
+          las = 2, main = paste0(&quot;EigenVector &quot;, j, &quot; for tPCA&quot;))</code></pre>
+<p><img src="figure/MashCommonbaseline.Rmd/tPCA%20pca-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Check Load 9 covariance matrix</p>
+<pre class="r"><code>x           &lt;- mash.model$fitted_g$Ulist[[&quot;ED_Load_9&quot;]]
+colnames(x) &lt;- row.names(L)
+rownames(x) &lt;- colnames(x)
+corrplot(x, method=&#39;color&#39;, cl.lim=c(-0.2,1), type=&#39;upper&#39;, addCoef.col = &quot;black&quot;, tl.col=&quot;black&quot;, tl.srt=45, col=colorRampPalette(c(&quot;blue&quot;,&quot;white&quot;,&quot;red&quot;))(200))</code></pre>
+<p><img src="figure/MashCommonbaseline.Rmd/Load9-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>layout(matrix(c(1,2,3,4), 2, 2, byrow=TRUE))
+svd.out = svd(mash.model$fitted_g$Ulist[[&quot;ED_Load_9&quot;]])
+v = svd.out$v
+colnames(v) = row.names(L)
+rownames(v) = colnames(v)
+options(repr.plot.width=10, repr.plot.height=5)
+for (j in 1:4)
+  barplot(v[,j]/v[,j][which.max(abs(v[,j]))], cex.names = 0.7,
+          las = 2, main = paste0(&quot;EigenVector &quot;, j, &quot; for Load 9&quot;))</code></pre>
+<p><img src="figure/MashCommonbaseline.Rmd/Load9%20pca-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Check Load 8 covariance matrix</p>
+<pre class="r"><code>x           &lt;- mash.model$fitted_g$Ulist[[&quot;ED_Load_8&quot;]]
+colnames(x) &lt;- row.names(L)
+rownames(x) &lt;- colnames(x)
+corrplot(x, method=&#39;color&#39;, cl.lim=c(-0.2,1), type=&#39;upper&#39;, addCoef.col = &quot;black&quot;, tl.col=&quot;black&quot;, tl.srt=45, col=colorRampPalette(c(&quot;blue&quot;,&quot;white&quot;,&quot;red&quot;))(200))</code></pre>
+<p><img src="figure/MashCommonbaseline.Rmd/Load8-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>layout(matrix(c(1,2,3,4), 2, 2, byrow=TRUE))
+svd.out = svd(mash.model$fitted_g$Ulist[[&quot;ED_Load_8&quot;]])
+v = svd.out$v
+colnames(v) = row.names(L)
+rownames(v) = colnames(v)
+options(repr.plot.width=10, repr.plot.height=5)
+for (j in 1:4)
+  barplot(v[,j]/v[,j][which.max(abs(v[,j]))], cex.names = 0.7,
+          las = 2, main = paste0(&quot;EigenVector &quot;, j, &quot; for Load 8&quot;))</code></pre>
+<p><img src="figure/MashCommonbaseline.Rmd/Load8%20pca-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Check PCA1 covariance matrix</p>
+<pre class="r"><code>x           &lt;- mash.model$fitted_g$Ulist[[&quot;ED_PCA_1&quot;]]
+colnames(x) &lt;- row.names(L)
+rownames(x) &lt;- colnames(x)
+corrplot(x, method=&#39;color&#39;, cl.lim=c(-0.2,1), type=&#39;upper&#39;, addCoef.col = &quot;black&quot;, tl.col=&quot;black&quot;, tl.srt=45, col=colorRampPalette(c(&quot;blue&quot;,&quot;white&quot;,&quot;red&quot;))(200))</code></pre>
+<p><img src="figure/MashCommonbaseline.Rmd/PCA1-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>layout(matrix(c(1,2,3,4), 2, 2, byrow=TRUE))
+svd.out = svd(mash.model$fitted_g$Ulist[[&quot;ED_PCA_1&quot;]])
+v = svd.out$v
+colnames(v) = row.names(L)
+rownames(v) = colnames(v)
+options(repr.plot.width=10, repr.plot.height=5)
+for (j in 1:4)
+  barplot(v[,j]/v[,j][which.max(abs(v[,j]))], cex.names = 0.7,
+          las = 2, main = paste0(&quot;EigenVector &quot;, j, &quot; for PCA 1&quot;))</code></pre>
+<p><img src="figure/MashCommonbaseline.Rmd/PCA1%20pca-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>There are 5187 diferentially expressed genes.</p>
+<p>Check pairwise sharing by magnitude and sign:</p>
+<pre class="r"><code>x = get_pairwise_sharing(mash.model)
+x[x &gt; 1]    &lt;- 1
+x[x &lt; -1]   &lt;- -1
+colnames(x) &lt;- row.names(L)
+rownames(x) &lt;- colnames(x)
+corrplot.mixed(x, tl.pos=&quot;d&quot;,upper=&#39;color&#39;, cl.lim=c(0,1), upper.col=colorRampPalette(rev(c(&quot;#D73027&quot;,&quot;#FC8D59&quot;,&quot;#FEE090&quot;,&quot;#FFFFBF&quot;,
+                               &quot;#E0F3F8&quot;,&quot;#91BFDB&quot;,&quot;#4575B4&quot;)))(40),
+               tl.cex=1.2)</code></pre>
+<p><img src="figure/MashCommonbaseline.Rmd/unnamed-chunk-3-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Check pairwise sharing by sign:</p>
+<pre class="r"><code>x = get_pairwise_sharing(mash.model, factor=0)
+x[x &gt; 1]    &lt;- 1
+x[x &lt; -1]   &lt;- -1
+colnames(x) &lt;- row.names(L)
+rownames(x) &lt;- colnames(x)
+corrplot.mixed(x, tl.pos=&quot;d&quot;,upper=&#39;color&#39;, cl.lim=c(0,1), upper.col=colorRampPalette(rev(c(&quot;#D73027&quot;,&quot;#FC8D59&quot;,&quot;#FEE090&quot;,&quot;#FFFFBF&quot;,
+                               &quot;#E0F3F8&quot;,&quot;#91BFDB&quot;,&quot;#4575B4&quot;)))(40),
+               tl.cex=1.2)</code></pre>
+<p><img src="figure/MashCommonbaseline.Rmd/unnamed-chunk-4-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="session-information" class="section level1">
+<h1>Session information</h1>
+<!-- Insert the session information into the document -->
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 3.4.4 (2018-03-15)
+Platform: x86_64-apple-darwin15.6.0 (64-bit)
+Running under: macOS High Sierra 10.13.4
+
+Matrix products: default
+BLAS: /Library/Frameworks/R.framework/Versions/3.4/Resources/lib/libRblas.0.dylib
+LAPACK: /Library/Frameworks/R.framework/Versions/3.4/Resources/lib/libRlapack.dylib
+
+locale:
+[1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+[1] corrplot_0.84  colorRamps_2.3 flashr_0.5-6   plyr_1.8.4    
+[5] mclust_5.4     mashr_0.2-6    ashr_2.2-7     limma_3.34.9  
+
+loaded via a namespace (and not attached):
+ [1] Rcpp_0.12.16      pillar_1.2.2      compiler_3.4.4   
+ [4] git2r_0.21.0      workflowr_1.0.1   R.methodsS3_1.7.1
+ [7] R.utils_2.6.0     iterators_1.0.9   tools_3.4.4      
+[10] digest_0.6.15     tibble_1.4.2      gtable_0.2.0     
+[13] evaluate_0.10.1   lattice_0.20-35   rlang_0.2.0      
+[16] Matrix_1.2-14     foreach_1.4.4     yaml_2.1.19      
+[19] parallel_3.4.4    mvtnorm_1.0-7     ebnm_0.1-11      
+[22] stringr_1.3.0     knitr_1.20        REBayes_1.3      
+[25] rprojroot_1.3-2   grid_3.4.4        rmarkdown_1.9    
+[28] rmeta_3.0         ggplot2_2.2.1     magrittr_1.5     
+[31] whisker_0.3-2     scales_0.5.0      backports_1.1.2  
+[34] codetools_0.2-15  htmltools_0.3.6   MASS_7.3-50      
+[37] assertthat_0.2.0  softImpute_1.4    colorspace_1.3-2 
+[40] stringi_1.2.2     Rmosek_8.0.69     lazyeval_0.2.1   
+[43] munsell_0.4.3     doParallel_1.0.11 pscl_1.5.2       
+[46] truncnorm_1.0-8   SQUAREM_2017.10-1 R.oo_1.22.0      </code></pre>
+<div id="session-information-1" class="section level2">
+<h2>Session information</h2>
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 3.4.4 (2018-03-15)
+Platform: x86_64-apple-darwin15.6.0 (64-bit)
+Running under: macOS High Sierra 10.13.4
+
+Matrix products: default
+BLAS: /Library/Frameworks/R.framework/Versions/3.4/Resources/lib/libRblas.0.dylib
+LAPACK: /Library/Frameworks/R.framework/Versions/3.4/Resources/lib/libRlapack.dylib
+
+locale:
+[1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+[1] corrplot_0.84  colorRamps_2.3 flashr_0.5-6   plyr_1.8.4    
+[5] mclust_5.4     mashr_0.2-6    ashr_2.2-7     limma_3.34.9  
+
+loaded via a namespace (and not attached):
+ [1] Rcpp_0.12.16      pillar_1.2.2      compiler_3.4.4   
+ [4] git2r_0.21.0      workflowr_1.0.1   R.methodsS3_1.7.1
+ [7] R.utils_2.6.0     iterators_1.0.9   tools_3.4.4      
+[10] digest_0.6.15     tibble_1.4.2      gtable_0.2.0     
+[13] evaluate_0.10.1   lattice_0.20-35   rlang_0.2.0      
+[16] Matrix_1.2-14     foreach_1.4.4     yaml_2.1.19      
+[19] parallel_3.4.4    mvtnorm_1.0-7     ebnm_0.1-11      
+[22] stringr_1.3.0     knitr_1.20        REBayes_1.3      
+[25] rprojroot_1.3-2   grid_3.4.4        rmarkdown_1.9    
+[28] rmeta_3.0         ggplot2_2.2.1     magrittr_1.5     
+[31] whisker_0.3-2     scales_0.5.0      backports_1.1.2  
+[34] codetools_0.2-15  htmltools_0.3.6   MASS_7.3-50      
+[37] assertthat_0.2.0  softImpute_1.4    colorspace_1.3-2 
+[40] stringi_1.2.2     Rmosek_8.0.69     lazyeval_0.2.1   
+[43] munsell_0.4.3     doParallel_1.0.11 pscl_1.5.2       
+[46] truncnorm_1.0-8   SQUAREM_2017.10-1 R.oo_1.22.0      </code></pre>
+</div>
+</div>
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+http://docs.mathjax.org/en/latest/configuration.html.  This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+<hr>
+<p>
+  This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a>
+  analysis was created with
+  <a href="https://github.com/jdblischak/workflowr">workflowr</a> 1.0.1
+</p>
+<hr>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
