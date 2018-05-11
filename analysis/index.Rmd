@@ -11,7 +11,9 @@ Application of `mash` on Gandal, Michael J., et al. "Shared molecular neuropatho
 # Meta study
 
 Flash:
-  * [Flash C](FlashC.html)
-  * [Flash D](FlashD.html)
+
+* [Flash C](FlashC.html)
+  
+* [Flash D](FlashD.html)
 
 Mash Commonbaseline: [mash commonbaseline EE](MashCommonbaseline.html)
