@@ -12,7 +12,7 @@
 <meta name="author" content="Yuxin Zou" />
 
 
-<title>Mashcommonbaseline_IBD</title>
+<title>Mash</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -327,9 +327,9 @@ div.section {
 
 
 
-<h1 class="title toc-ignore">Mashcommonbaseline_IBD</h1>
+<h1 class="title toc-ignore">Mash</h1>
 <h4 class="author"><em>Yuxin Zou</em></h4>
-<h4 class="date"><em>2018-5-9</em></h4>
+<h4 class="date"><em>2018-5-10</em></h4>
 
 </div>
 
@@ -382,7 +382,6 @@ Untracked files:
     Untracked:  data/results/control/
     Untracked:  data/results/tables/
     Untracked:  data/working_data/
-    Untracked:  docs/figure/MashEE.Rmd/
     Untracked:  output/MashCB_EE_Cov_IBD.rds
     Untracked:  output/MashCB_model_EE_IBD.rds
     Untracked:  output/MashControl_EE_Cov.rds
@@ -427,7 +426,7 @@ Message
 Rmd
 </td>
 <td style="text-align:left;">
-<a href="https://github.com/zouyuxin/mash_Gandal_2018/blob/24354dbc05fcb4f5e53fa934aa0f64aa80014709/analysis/MashCommonbaseline_IBD.Rmd" target="_blank">24354db</a>
+<a href="https://github.com/zouyuxin/mash_Gandal_2018/blob/24354dbc05fcb4f5e53fa934aa0f64aa80014709/analysis/MashEE.Rmd" target="_blank">24354db</a>
 </td>
 <td style="text-align:left;">
 zouyuxin
@@ -437,40 +436,6 @@ zouyuxin
 </td>
 <td style="text-align:left;">
 mash models
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-html
-</td>
-<td style="text-align:left;">
-<a href="https://cdn.rawgit.com/zouyuxin/mash_Gandal_2018/888a0b11efdeee9f367fcb567570afd84a2d68f5/docs/MashCommonbaseline_IBD.html" target="_blank">888a0b1</a>
-</td>
-<td style="text-align:left;">
-zouyuxin
-</td>
-<td style="text-align:left;">
-2018-05-10
-</td>
-<td style="text-align:left;">
-Build site.
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Rmd
-</td>
-<td style="text-align:left;">
-<a href="https://github.com/zouyuxin/mash_Gandal_2018/blob/ecee481e93ca8c1d2cb6240d32182ab6180246e5/analysis/MashCommonbaseline_IBD.Rmd" target="_blank">ecee481</a>
-</td>
-<td style="text-align:left;">
-zouyuxin
-</td>
-<td style="text-align:left;">
-2018-05-10
-</td>
-<td style="text-align:left;">
-wflow_publish(c(“analysis/index.Rmd”,
 </td>
 </tr>
 </tbody>
@@ -489,22 +454,15 @@ Attaching package: &#39;mclust&#39;</code></pre>
     dens</code></pre>
 <pre class="r"><code>library(flashr); library(colorRamps); library(corrplot)</code></pre>
 <pre><code>corrplot 0.84 loaded</code></pre>
-<pre class="r"><code>data = readRDS(&#39;../data/results/Microarray_compiledGLM_IBD.rds&#39;)</code></pre>
+<pre class="r"><code>data = readRDS(&#39;../data/results/control/CompiledData.rds&#39;)</code></pre>
 <div id="mash" class="section level2">
 <h2>Mash</h2>
-<p>The standard errors in the data are from t distribution with df 733. Since <code>pt(-abs(Bhat/Shat), df)</code> is very close to zero, it is hard to obtain the standard error from the normal distribution. The degree of freedom is large here, we use the original standard error.</p>
-<pre class="r"><code>mash.data = mash_set_data(Bhat = data$Chat, Shat = data$SE)
-L = diag(ncol(data$Chat))
-# the 4th col is CTL
-L[,4] = -1
-row.names(L) = colnames(data$Chat)
-L = L[-4,]
-mash.data.diff = mash_set_data_contrast(mash.data, L)</code></pre>
+<pre class="r"><code>mash.data = mash_set_data(Bhat = data$beta, pval = data$p)</code></pre>
 <p>Top genes:</p>
 <pre class="r"><code># find strong genes
-m.1by1 = mash_1by1(mash.data.diff, alpha=0)
+m.1by1 = mash_1by1(mash.data, alpha=0)
 strong = get_significant_results(m.1by1)
-Z = mash.data.diff$Bhat/mash.data.diff$Shat
+Z = mash.data$Bhat/mash.data$Shat
 Z.strong = Z[strong,]
 # center
 Z.center = apply(Z.strong, 2, function(x) x - mean(x))</code></pre>
@@ -519,44 +477,14 @@ fmodel = flash(flash.data, greedy = TRUE, backfit = TRUE)</code></pre>
 <pre><code>fitting factor/loading 3</code></pre>
 <pre><code>fitting factor/loading 4</code></pre>
 <pre class="r"><code>factors = flash_get_ldf(fmodel)$f
-row.names(factors) = row.names(L)
+row.names(factors) = colnames(data$beta)
 pve.order = order(flash_get_pve(fmodel), decreasing = TRUE)
 
 par(mfrow=c(1,3))
 for(i in pve.order){
   barplot(factors[,i], main=paste0(&#39;Factor &#39;,i, &#39; pve= &#39;, round(flash_get_pve(fmodel)[i],3)), las=2, cex.names = 0.7)
 }</code></pre>
-<p><img src="figure/MashCommonbaseline_IBD.Rmd/flash%20plot-1.png" width="672" style="display: block; margin: auto;" /></p>
-<details> <summary><em>Expand here to see past versions of flash plot-1.png:</em></summary>
-<table style="border-collapse:separate; border-spacing:5px;">
-<thead>
-<tr>
-<th style="text-align:left;">
-Version
-</th>
-<th style="text-align:left;">
-Author
-</th>
-<th style="text-align:left;">
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left;">
-<a href="https://github.com/zouyuxin/mash_Gandal_2018/blob/888a0b11efdeee9f367fcb567570afd84a2d68f5/docs/figure/MashCommonbaseline_IBD.Rmd/flash plot-1.png" target="_blank">888a0b1</a>
-</td>
-<td style="text-align:left;">
-zouyuxin
-</td>
-<td style="text-align:left;">
-2018-05-10
-</td>
-</tr>
-</tbody>
-</table>
-<p></details></p>
+<p><img src="figure/MashEE.Rmd/flash%20plot-1.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>par(mfrow=c(1,1))</code></pre>
 <p><code>flash</code> on the loading:</p>
 <pre class="r"><code>loading = fmodel$EL[,1:3]
@@ -569,9 +497,9 @@ flmodel = flash(flash.loading, greedy = TRUE, backfit = TRUE)</code></pre>
 <pre class="r"><code>mod = Mclust(loading)
 summary(mod$BIC)</code></pre>
 <pre><code>Best BIC values:
-             VVI,9         VVE,9       VVV,9
-BIC      -39480.53 -39486.265635 -39619.0773
-BIC diff      0.00     -5.738225   -138.5499</code></pre>
+             VVE,6        VVE,7        EVE,6
+BIC      -34778.07 -34815.86606 -34816.67977
+BIC diff      0.00    -37.79266    -38.60637</code></pre>
 <p>Using clustering result to fit <code>mash</code>:</p>
 <p><span class="math display">\[l_{i}\sim \sum_{j=1}^{m}N(\mu_{j}, \Sigma_{j})\]</span> We estimate the covariance as <span class="math inline">\(F(\Sigma_j + \mu_{j}\mu_{j}&#39;)F&#39;\)</span>.</p>
 <pre class="r"><code>U_list = alply(mod$parameters$variance$sigma,3)
@@ -596,443 +524,71 @@ U.Flash = c(mashr::cov_from_factors(t(as.matrix(factors)), &quot;Flash&quot;),
 <p>Extreme Deconvolution</p>
 <pre class="r"><code>U.dd = c(U.pca, U.loading, U.Flash, list(&#39;XX&#39; = t(Z.center) %*% Z.center / nrow(Z.center)))
 
-mash.data.ed = mash.data.diff
-mash.data.ed$Bhat = mash.data.diff$Bhat[strong,]
-mash.data.ed$Shat = mash.data.diff$Shat[strong,]
-mash.data.ed$Shat_alpha = mash.data.diff$Shat_alpha[strong,]
-saveRDS(cov_ed(mash.data.ed, U.dd), &#39;../output/MashCB_EE_Cov_IBD.rds&#39;)</code></pre>
+U.ed = cov_ed(mash.data, U.dd, strong)</code></pre>
 </div>
 <div id="mash-model" class="section level3">
 <h3>Mash model:</h3>
-<pre class="r"><code>U.ed = readRDS(&#39;../output/MashCB_EE_Cov_IBD.rds&#39;)</code></pre>
-<pre class="r"><code>saveRDS(mash(mash.data.diff, c(U.c, U.ed), algorithm.version = &#39;R&#39;), &#39;../output/MashCB_model_EE_IBD.rds&#39;) </code></pre>
+<pre class="r"><code>mash.model = mash(mash.data, c(U.c, U.ed))</code></pre>
+<pre><code> - Computing 11200 x 651 likelihood matrix.
+ - Likelihood calculations took 6.74 seconds.
+ - Fitting model with 651 mixture components.</code></pre>
+<pre><code>Warning in REBayes::KWDual(A, rep(1, k), normalize(w), control = control): estimated mixing distribution has some negative values:
+               consider reducing rtol</code></pre>
+<pre><code>Warning in mixIP(matrix_lik = structure(c(0.000549917574123474,
+0.107339052191479, : Optimization step yields mixture weights that are
+either too small, or negative; weights have been corrected and renormalized
+after the optimization.</code></pre>
+<pre><code> - Model fitting took 14.94 seconds.
+ - Computing posterior matrices.
+ - Computation allocated took 0.58 seconds.</code></pre>
 </div>
 </div>
 <div id="result" class="section level2">
 <h2>Result</h2>
-<pre class="r"><code>mash.model = readRDS(&#39;../output/MashCB_model_EE_IBD.rds&#39;)</code></pre>
 <p>The log-likelihood of fit is</p>
 <pre class="r"><code>get_loglik(mash.model)</code></pre>
-<pre><code>[1] 63723.63</code></pre>
+<pre><code>[1] 74461.66</code></pre>
 <p>Here is a plot of weights learned:</p>
 <pre class="r"><code>options(repr.plot.width=12, repr.plot.height=4)
 barplot(get_estimated_pi(mash.model), las = 2, cex.names = 0.7)</code></pre>
-<p><img src="figure/MashCommonbaseline_IBD.Rmd/estimated%20weight-1.png" width="672" style="display: block; margin: auto;" /></p>
-<details> <summary><em>Expand here to see past versions of estimated weight-1.png:</em></summary>
-<table style="border-collapse:separate; border-spacing:5px;">
-<thead>
-<tr>
-<th style="text-align:left;">
-Version
-</th>
-<th style="text-align:left;">
-Author
-</th>
-<th style="text-align:left;">
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left;">
-<a href="https://github.com/zouyuxin/mash_Gandal_2018/blob/888a0b11efdeee9f367fcb567570afd84a2d68f5/docs/figure/MashCommonbaseline_IBD.Rmd/estimated weight-1.png" target="_blank">888a0b1</a>
-</td>
-<td style="text-align:left;">
-zouyuxin
-</td>
-<td style="text-align:left;">
-2018-05-10
-</td>
-</tr>
-</tbody>
-</table>
-<p></details></p>
-<p>Check tPCA covariance matrix</p>
-<pre class="r"><code>x           &lt;- mash.model$fitted_g$Ulist[[&quot;ED_tPCA&quot;]]
-colnames(x) &lt;- row.names(L)
-rownames(x) &lt;- colnames(x)
-corrplot(x, method=&#39;color&#39;, cl.lim=c(-0.1,1), type=&#39;upper&#39;, addCoef.col = &quot;black&quot;, tl.col=&quot;black&quot;, tl.srt=45, col=colorRampPalette(c(&quot;blue&quot;,&quot;white&quot;,&quot;red&quot;))(200))</code></pre>
-<p><img src="figure/MashCommonbaseline_IBD.Rmd/tPCA-1.png" width="672" style="display: block; margin: auto;" /></p>
-<details> <summary><em>Expand here to see past versions of tPCA-1.png:</em></summary>
-<table style="border-collapse:separate; border-spacing:5px;">
-<thead>
-<tr>
-<th style="text-align:left;">
-Version
-</th>
-<th style="text-align:left;">
-Author
-</th>
-<th style="text-align:left;">
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left;">
-<a href="https://github.com/zouyuxin/mash_Gandal_2018/blob/888a0b11efdeee9f367fcb567570afd84a2d68f5/docs/figure/MashCommonbaseline_IBD.Rmd/tPCA-1.png" target="_blank">888a0b1</a>
-</td>
-<td style="text-align:left;">
-zouyuxin
-</td>
-<td style="text-align:left;">
-2018-05-10
-</td>
-</tr>
-</tbody>
-</table>
-<p></details></p>
-<pre class="r"><code>layout(matrix(c(1,2,3,4), 2, 2, byrow=TRUE))
-svd.out = svd(mash.model$fitted_g$Ulist[[&quot;ED_tPCA&quot;]])
-v = svd.out$v
-colnames(v) = row.names(L)
-rownames(v) = colnames(v)
-options(repr.plot.width=10, repr.plot.height=5)
-for (j in 1:4)
-  barplot(v[,j]/v[,j][which.max(abs(v[,j]))], cex.names = 0.7,
-          las = 2, main = paste0(&quot;EigenVector &quot;, j, &quot; for tPCA&quot;))</code></pre>
-<p><img src="figure/MashCommonbaseline_IBD.Rmd/tPCA%20pca-1.png" width="672" style="display: block; margin: auto;" /></p>
-<details> <summary><em>Expand here to see past versions of tPCA pca-1.png:</em></summary>
-<table style="border-collapse:separate; border-spacing:5px;">
-<thead>
-<tr>
-<th style="text-align:left;">
-Version
-</th>
-<th style="text-align:left;">
-Author
-</th>
-<th style="text-align:left;">
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left;">
-<a href="https://github.com/zouyuxin/mash_Gandal_2018/blob/888a0b11efdeee9f367fcb567570afd84a2d68f5/docs/figure/MashCommonbaseline_IBD.Rmd/tPCA pca-1.png" target="_blank">888a0b1</a>
-</td>
-<td style="text-align:left;">
-zouyuxin
-</td>
-<td style="text-align:left;">
-2018-05-10
-</td>
-</tr>
-</tbody>
-</table>
-<p></details></p>
-<p>Check Load 9 covariance matrix</p>
-<pre class="r"><code>x           &lt;- mash.model$fitted_g$Ulist[[&quot;ED_Load_9&quot;]]
-colnames(x) &lt;- row.names(L)
+<p><img src="figure/MashEE.Rmd/estimated%20weight-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Check XX covariance matrix</p>
+<pre class="r"><code>x           &lt;- mash.model$fitted_g$Ulist[[&quot;ED_XX&quot;]]
+colnames(x) &lt;- colnames(data$beta)
 rownames(x) &lt;- colnames(x)
 corrplot(x, method=&#39;color&#39;, cl.lim=c(-0.2,1), type=&#39;upper&#39;, addCoef.col = &quot;black&quot;, tl.col=&quot;black&quot;, tl.srt=45, col=colorRampPalette(c(&quot;blue&quot;,&quot;white&quot;,&quot;red&quot;))(200))</code></pre>
-<p><img src="figure/MashCommonbaseline_IBD.Rmd/Load9-1.png" width="672" style="display: block; margin: auto;" /></p>
-<details> <summary><em>Expand here to see past versions of Load9-1.png:</em></summary>
-<table style="border-collapse:separate; border-spacing:5px;">
-<thead>
-<tr>
-<th style="text-align:left;">
-Version
-</th>
-<th style="text-align:left;">
-Author
-</th>
-<th style="text-align:left;">
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left;">
-<a href="https://github.com/zouyuxin/mash_Gandal_2018/blob/888a0b11efdeee9f367fcb567570afd84a2d68f5/docs/figure/MashCommonbaseline_IBD.Rmd/Load9-1.png" target="_blank">888a0b1</a>
-</td>
-<td style="text-align:left;">
-zouyuxin
-</td>
-<td style="text-align:left;">
-2018-05-10
-</td>
-</tr>
-</tbody>
-</table>
-<p></details></p>
+<p><img src="figure/MashEE.Rmd/XX-1.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>layout(matrix(c(1,2,3,4), 2, 2, byrow=TRUE))
-svd.out = svd(mash.model$fitted_g$Ulist[[&quot;ED_Load_9&quot;]])
+svd.out = svd(mash.model$fitted_g$Ulist[[&quot;ED_XX&quot;]])
 v = svd.out$v
-colnames(v) = row.names(L)
+colnames(v) = colnames(data$beta)
 rownames(v) = colnames(v)
 options(repr.plot.width=10, repr.plot.height=5)
 for (j in 1:4)
   barplot(v[,j]/v[,j][which.max(abs(v[,j]))], cex.names = 0.7,
-          las = 2, main = paste0(&quot;EigenVector &quot;, j, &quot; for Load 9&quot;))</code></pre>
-<p><img src="figure/MashCommonbaseline_IBD.Rmd/Load9%20pca-1.png" width="672" style="display: block; margin: auto;" /></p>
-<details> <summary><em>Expand here to see past versions of Load9 pca-1.png:</em></summary>
-<table style="border-collapse:separate; border-spacing:5px;">
-<thead>
-<tr>
-<th style="text-align:left;">
-Version
-</th>
-<th style="text-align:left;">
-Author
-</th>
-<th style="text-align:left;">
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left;">
-<a href="https://github.com/zouyuxin/mash_Gandal_2018/blob/888a0b11efdeee9f367fcb567570afd84a2d68f5/docs/figure/MashCommonbaseline_IBD.Rmd/Load9 pca-1.png" target="_blank">888a0b1</a>
-</td>
-<td style="text-align:left;">
-zouyuxin
-</td>
-<td style="text-align:left;">
-2018-05-10
-</td>
-</tr>
-</tbody>
-</table>
-<p></details></p>
-<p>Check Load 8 covariance matrix</p>
-<pre class="r"><code>x           &lt;- mash.model$fitted_g$Ulist[[&quot;ED_Load_8&quot;]]
-colnames(x) &lt;- row.names(L)
-rownames(x) &lt;- colnames(x)
-corrplot(x, method=&#39;color&#39;, cl.lim=c(-0.2,1), type=&#39;upper&#39;, addCoef.col = &quot;black&quot;, tl.col=&quot;black&quot;, tl.srt=45, col=colorRampPalette(c(&quot;blue&quot;,&quot;white&quot;,&quot;red&quot;))(200))</code></pre>
-<p><img src="figure/MashCommonbaseline_IBD.Rmd/Load8-1.png" width="672" style="display: block; margin: auto;" /></p>
-<details> <summary><em>Expand here to see past versions of Load8-1.png:</em></summary>
-<table style="border-collapse:separate; border-spacing:5px;">
-<thead>
-<tr>
-<th style="text-align:left;">
-Version
-</th>
-<th style="text-align:left;">
-Author
-</th>
-<th style="text-align:left;">
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left;">
-<a href="https://github.com/zouyuxin/mash_Gandal_2018/blob/888a0b11efdeee9f367fcb567570afd84a2d68f5/docs/figure/MashCommonbaseline_IBD.Rmd/Load8-1.png" target="_blank">888a0b1</a>
-</td>
-<td style="text-align:left;">
-zouyuxin
-</td>
-<td style="text-align:left;">
-2018-05-10
-</td>
-</tr>
-</tbody>
-</table>
-<p></details></p>
-<pre class="r"><code>layout(matrix(c(1,2,3,4), 2, 2, byrow=TRUE))
-svd.out = svd(mash.model$fitted_g$Ulist[[&quot;ED_Load_8&quot;]])
-v = svd.out$v
-colnames(v) = row.names(L)
-rownames(v) = colnames(v)
-options(repr.plot.width=10, repr.plot.height=5)
-for (j in 1:4)
-  barplot(v[,j]/v[,j][which.max(abs(v[,j]))], cex.names = 0.7,
-          las = 2, main = paste0(&quot;EigenVector &quot;, j, &quot; for Load 8&quot;))</code></pre>
-<p><img src="figure/MashCommonbaseline_IBD.Rmd/Load8%20pca-1.png" width="672" style="display: block; margin: auto;" /></p>
-<details> <summary><em>Expand here to see past versions of Load8 pca-1.png:</em></summary>
-<table style="border-collapse:separate; border-spacing:5px;">
-<thead>
-<tr>
-<th style="text-align:left;">
-Version
-</th>
-<th style="text-align:left;">
-Author
-</th>
-<th style="text-align:left;">
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left;">
-<a href="https://github.com/zouyuxin/mash_Gandal_2018/blob/888a0b11efdeee9f367fcb567570afd84a2d68f5/docs/figure/MashCommonbaseline_IBD.Rmd/Load8 pca-1.png" target="_blank">888a0b1</a>
-</td>
-<td style="text-align:left;">
-zouyuxin
-</td>
-<td style="text-align:left;">
-2018-05-10
-</td>
-</tr>
-</tbody>
-</table>
-<p></details></p>
-<p>Check PCA1 covariance matrix</p>
-<pre class="r"><code>x           &lt;- mash.model$fitted_g$Ulist[[&quot;ED_PCA_1&quot;]]
-colnames(x) &lt;- row.names(L)
-rownames(x) &lt;- colnames(x)
-corrplot(x, method=&#39;color&#39;, cl.lim=c(-0.2,1), type=&#39;upper&#39;, addCoef.col = &quot;black&quot;, tl.col=&quot;black&quot;, tl.srt=45, col=colorRampPalette(c(&quot;blue&quot;,&quot;white&quot;,&quot;red&quot;))(200))</code></pre>
-<p><img src="figure/MashCommonbaseline_IBD.Rmd/PCA1-1.png" width="672" style="display: block; margin: auto;" /></p>
-<details> <summary><em>Expand here to see past versions of PCA1-1.png:</em></summary>
-<table style="border-collapse:separate; border-spacing:5px;">
-<thead>
-<tr>
-<th style="text-align:left;">
-Version
-</th>
-<th style="text-align:left;">
-Author
-</th>
-<th style="text-align:left;">
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left;">
-<a href="https://github.com/zouyuxin/mash_Gandal_2018/blob/888a0b11efdeee9f367fcb567570afd84a2d68f5/docs/figure/MashCommonbaseline_IBD.Rmd/PCA1-1.png" target="_blank">888a0b1</a>
-</td>
-<td style="text-align:left;">
-zouyuxin
-</td>
-<td style="text-align:left;">
-2018-05-10
-</td>
-</tr>
-</tbody>
-</table>
-<p></details></p>
-<pre class="r"><code>layout(matrix(c(1,2,3,4), 2, 2, byrow=TRUE))
-svd.out = svd(mash.model$fitted_g$Ulist[[&quot;ED_PCA_1&quot;]])
-v = svd.out$v
-colnames(v) = row.names(L)
-rownames(v) = colnames(v)
-options(repr.plot.width=10, repr.plot.height=5)
-for (j in 1:4)
-  barplot(v[,j]/v[,j][which.max(abs(v[,j]))], cex.names = 0.7,
-          las = 2, main = paste0(&quot;EigenVector &quot;, j, &quot; for PCA 1&quot;))</code></pre>
-<p><img src="figure/MashCommonbaseline_IBD.Rmd/PCA1%20pca-1.png" width="672" style="display: block; margin: auto;" /></p>
-<details> <summary><em>Expand here to see past versions of PCA1 pca-1.png:</em></summary>
-<table style="border-collapse:separate; border-spacing:5px;">
-<thead>
-<tr>
-<th style="text-align:left;">
-Version
-</th>
-<th style="text-align:left;">
-Author
-</th>
-<th style="text-align:left;">
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left;">
-<a href="https://github.com/zouyuxin/mash_Gandal_2018/blob/888a0b11efdeee9f367fcb567570afd84a2d68f5/docs/figure/MashCommonbaseline_IBD.Rmd/PCA1 pca-1.png" target="_blank">888a0b1</a>
-</td>
-<td style="text-align:left;">
-zouyuxin
-</td>
-<td style="text-align:left;">
-2018-05-10
-</td>
-</tr>
-</tbody>
-</table>
-<p></details></p>
-<p>There are 5187 diferentially expressed genes.</p>
+          las = 2, main = paste0(&quot;EigenVector &quot;, j, &quot; for XX&quot;))</code></pre>
+<p><img src="figure/MashEE.Rmd/XX%20pca-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>There are 4504 diferentially expressed genes.</p>
 <p>Check pairwise sharing by magnitude and sign:</p>
 <pre class="r"><code>x = get_pairwise_sharing(mash.model)
 x[x &gt; 1]    &lt;- 1
 x[x &lt; -1]   &lt;- -1
-colnames(x) &lt;- row.names(L)
+colnames(x) &lt;- colnames(data$beta)
 rownames(x) &lt;- colnames(x)
 corrplot.mixed(x, tl.pos=&quot;d&quot;,upper=&#39;color&#39;, cl.lim=c(0,1), upper.col=colorRampPalette(rev(c(&quot;#D73027&quot;,&quot;#FC8D59&quot;,&quot;#FEE090&quot;,&quot;#FFFFBF&quot;,
                                &quot;#E0F3F8&quot;,&quot;#91BFDB&quot;,&quot;#4575B4&quot;)))(40),
                tl.cex=1.2)</code></pre>
-<p><img src="figure/MashCommonbaseline_IBD.Rmd/unnamed-chunk-3-1.png" width="672" style="display: block; margin: auto;" /></p>
-<details> <summary><em>Expand here to see past versions of unnamed-chunk-3-1.png:</em></summary>
-<table style="border-collapse:separate; border-spacing:5px;">
-<thead>
-<tr>
-<th style="text-align:left;">
-Version
-</th>
-<th style="text-align:left;">
-Author
-</th>
-<th style="text-align:left;">
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left;">
-<a href="https://github.com/zouyuxin/mash_Gandal_2018/blob/888a0b11efdeee9f367fcb567570afd84a2d68f5/docs/figure/MashCommonbaseline_IBD.Rmd/unnamed-chunk-3-1.png" target="_blank">888a0b1</a>
-</td>
-<td style="text-align:left;">
-zouyuxin
-</td>
-<td style="text-align:left;">
-2018-05-10
-</td>
-</tr>
-</tbody>
-</table>
-<p></details></p>
+<p><img src="figure/MashEE.Rmd/unnamed-chunk-1-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>Check pairwise sharing by sign:</p>
 <pre class="r"><code>x = get_pairwise_sharing(mash.model, factor=0)
 x[x &gt; 1]    &lt;- 1
 x[x &lt; -1]   &lt;- -1
-colnames(x) &lt;- row.names(L)
+colnames(x) &lt;- colnames(data$beta)
 rownames(x) &lt;- colnames(x)
 corrplot.mixed(x, tl.pos=&quot;d&quot;,upper=&#39;color&#39;, cl.lim=c(0,1), upper.col=colorRampPalette(rev(c(&quot;#D73027&quot;,&quot;#FC8D59&quot;,&quot;#FEE090&quot;,&quot;#FFFFBF&quot;,
                                &quot;#E0F3F8&quot;,&quot;#91BFDB&quot;,&quot;#4575B4&quot;)))(40),
                tl.cex=1.2)</code></pre>
-<p><img src="figure/MashCommonbaseline_IBD.Rmd/unnamed-chunk-4-1.png" width="672" style="display: block; margin: auto;" /></p>
-<details> <summary><em>Expand here to see past versions of unnamed-chunk-4-1.png:</em></summary>
-<table style="border-collapse:separate; border-spacing:5px;">
-<thead>
-<tr>
-<th style="text-align:left;">
-Version
-</th>
-<th style="text-align:left;">
-Author
-</th>
-<th style="text-align:left;">
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left;">
-<a href="https://github.com/zouyuxin/mash_Gandal_2018/blob/888a0b11efdeee9f367fcb567570afd84a2d68f5/docs/figure/MashCommonbaseline_IBD.Rmd/unnamed-chunk-4-1.png" target="_blank">888a0b1</a>
-</td>
-<td style="text-align:left;">
-zouyuxin
-</td>
-<td style="text-align:left;">
-2018-05-10
-</td>
-</tr>
-</tbody>
-</table>
-<p></details></p>
+<p><img src="figure/MashEE.Rmd/unnamed-chunk-2-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <div id="session-information" class="section level2">
 <h2>Session information</h2>
@@ -1056,22 +612,31 @@ other attached packages:
 [5] mclust_5.4     mashr_0.2-6    ashr_2.2-7     limma_3.34.9  
 
 loaded via a namespace (and not attached):
- [1] Rcpp_0.12.16      pillar_1.2.2      compiler_3.4.4   
- [4] git2r_0.21.0      workflowr_1.0.1   R.methodsS3_1.7.1
- [7] R.utils_2.6.0     iterators_1.0.9   tools_3.4.4      
-[10] digest_0.6.15     tibble_1.4.2      gtable_0.2.0     
-[13] evaluate_0.10.1   lattice_0.20-35   rlang_0.2.0      
-[16] Matrix_1.2-14     foreach_1.4.4     yaml_2.1.19      
-[19] parallel_3.4.4    mvtnorm_1.0-7     ebnm_0.1-11      
-[22] stringr_1.3.0     knitr_1.20        REBayes_1.3      
-[25] rprojroot_1.3-2   grid_3.4.4        rmarkdown_1.9    
-[28] rmeta_3.0         ggplot2_2.2.1     magrittr_1.5     
-[31] whisker_0.3-2     scales_0.5.0      backports_1.1.2  
-[34] codetools_0.2-15  htmltools_0.3.6   MASS_7.3-50      
-[37] assertthat_0.2.0  softImpute_1.4    colorspace_1.3-2 
-[40] stringi_1.2.2     Rmosek_8.0.69     lazyeval_0.2.1   
-[43] munsell_0.4.3     doParallel_1.0.11 pscl_1.5.2       
-[46] truncnorm_1.0-8   SQUAREM_2017.10-1 R.oo_1.22.0      </code></pre>
+ [1] Rcpp_0.12.16             pillar_1.2.2            
+ [3] compiler_3.4.4           git2r_0.21.0            
+ [5] workflowr_1.0.1          R.methodsS3_1.7.1       
+ [7] R.utils_2.6.0            iterators_1.0.9         
+ [9] tools_3.4.4              digest_0.6.15           
+[11] tibble_1.4.2             gtable_0.2.0            
+[13] evaluate_0.10.1          lattice_0.20-35         
+[15] rlang_0.2.0              Matrix_1.2-14           
+[17] foreach_1.4.4            yaml_2.1.19             
+[19] parallel_3.4.4           mvtnorm_1.0-7           
+[21] ebnm_0.1-11              stringr_1.3.0           
+[23] knitr_1.20               REBayes_1.3             
+[25] rprojroot_1.3-2          grid_3.4.4              
+[27] rmarkdown_1.9            rmeta_3.0               
+[29] ggplot2_2.2.1            magrittr_1.5            
+[31] whisker_0.3-2            scales_0.5.0            
+[33] backports_1.1.2          codetools_0.2-15        
+[35] htmltools_0.3.6          MASS_7.3-50             
+[37] assertthat_0.2.0         softImpute_1.4          
+[39] colorspace_1.3-2         stringi_1.2.2           
+[41] Rmosek_8.0.69            lazyeval_0.2.1          
+[43] munsell_0.4.3            doParallel_1.0.11       
+[45] pscl_1.5.2               truncnorm_1.0-8         
+[47] SQUAREM_2017.10-1        ExtremeDeconvolution_1.3
+[49] R.oo_1.22.0             </code></pre>
 </div>
 
 <!-- Adjust MathJax settings so that all math formulae are shown using
