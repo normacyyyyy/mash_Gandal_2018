@@ -1,0 +1,104 @@
+---
+title: "Flash on deviation"
+author: "Yuxin Zou"
+date: 2018-5-10
+output: 
+  html_document:
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r read-chunk, include=FALSE, cache=FALSE}
+knitr::read_chunk("analysis/chunks.R")
+```
+
+<!-- Update knitr chunk options -->
+```{r knitr-opts-chunk, include=FALSE}
+```
+
+<!-- Insert the date the file was last updated -->
+```{r last-updated, echo=FALSE, results='asis'}
+```
+
+<!-- Insert the code version (Git commit SHA1) if Git repository exists and R
+ package git2r is installed -->
+```{r code-version, echo=FALSE, results='asis'}
+```
+
+```{r packages}
+library(flashr); library(colorRamps); library(corrplot); library(mashr)
+```
+
+```{r}
+data = readRDS('data/results/Microarray_compiledGLM.rds')
+```
+
+# Flash on deviation (over control)
+
+Set flash data object
+```{r}
+mash.data = mash_set_data(Bhat = data$Chat, Shat = data$SE)
+L = diag(ncol(data$Chat))
+# the 4th col is none
+L[,4] = -1
+row.names(L) = colnames(data$Chat)
+L = L[-4,]
+mash.data.diff = mash_set_data_contrast(mash.data, L)
+
+flash.data = flash_set_data(mash.data.diff$Bhat/mash.data.diff$Shat)
+flash.model = flash(flash.data, greedy=TRUE, backfit = TRUE)
+```
+
+```{r}
+factors = flash_get_ldf(flash.model)$f
+row.names(factors) = row.names(L)
+pve.order = order(flash_get_pve(flash.model), decreasing = TRUE)
+
+par(mfrow=c(1,3))
+for(i in pve.order){
+  barplot(factors[,i], main=paste0('Factor ',i, ' pve= ', round(flash_get_pve(flash.model)[i],3)), las=2, cex.names = 0.7)
+}
+par(mfrow=c(1,1))
+```
+
+Flash on loading:
+```{r}
+loading = flash.model$EL[, 1:3]
+flash.data.l = flash_set_data(loading)
+flash.model.l = flash(flash.data.l, greedy = TRUE, backfit = TRUE)
+```
+
+## Flash on centered deviation (over control)
+
+```{r}
+Z.center = apply(mash.data.diff$Bhat/mash.data.diff$Shat, 2, function(x) x - mean(x))
+flash.data.c = flash_set_data(Z.center)
+flash.model.c = flash(flash.data.c, greedy=TRUE, backfit = TRUE)
+```
+```{r}
+factors = flash_get_ldf(flash.model.c)$f
+row.names(factors) = row.names(L)
+pve.order = order(flash_get_pve(flash.model.c), decreasing = TRUE)
+
+par(mfrow=c(1,3))
+for(i in pve.order){
+  barplot(factors[,i], main=paste0('Factor ',i, ' pve= ', round(flash_get_pve(flash.model.c)[i],3)), las=2, cex.names = 0.7)
+}
+par(mfrow=c(1,1))
+```
+
+Flash on loading:
+```{r}
+loading.c = flash.model.c$EL[, 1:3]
+flash.data.lc = flash_set_data(loading.c)
+flash.model.lc = flash(flash.data.lc, greedy = TRUE, backfit = TRUE)
+```
+
+# Session information
+
+<!-- Insert the session information into the document -->
+```{r session-info}
+```
