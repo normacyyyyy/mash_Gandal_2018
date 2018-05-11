@@ -17,3 +17,9 @@ Flash:
 * [Flash D](FlashD.html)
 
 Mash Commonbaseline: [mash commonbaseline EE](MashCommonbaseline.html)
+
+# Seperate control
+
+[Flash](FlashD_Control.html)
+
+[Mash](MashEE.html)
