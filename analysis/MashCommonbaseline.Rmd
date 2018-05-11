@@ -1,7 +1,7 @@
 ---
 title: "Mashcommonbaseline"
 author: "Yuxin Zou"
-date: 2018-5-9
+date: 2018-5-10
 output: 
   html_document:
     code_folding: hide
@@ -33,8 +33,6 @@ library(limma); library(mashr); library(mclust); library(plyr);
 library(flashr); library(colorRamps); library(corrplot)
 ```
 
-Implement `mash` on John's data at time point 18.
-
 ```{r data}
 data = readRDS('data/results/Microarray_compiledGLM.rds')
 ```
@@ -58,8 +56,11 @@ Top genes:
 # find strong genes
 m.1by1 = mash_1by1(mash.data.diff, alpha=0)
 strong = get_significant_results(m.1by1)
+# almost all genes are strong
+set.seed(100)
+strong.sample = sample(strong, length(strong)/2, replace = FALSE)
 Z = mash.data.diff$Bhat/mash.data.diff$Shat
-Z.strong = Z[strong,]
+Z.strong = Z[strong.sample,]
 # center
 Z.center = apply(Z.strong, 2, function(x) x - mean(x))
 ```
@@ -189,67 +190,25 @@ for (j in 1:4)
           las = 2, main = paste0("EigenVector ", j, " for tPCA"))
 ```
 
-Check Load 9 covariance matrix
+Check Load 4 covariance matrix
 
-```{r Load9}
-x           <- mash.model$fitted_g$Ulist[["ED_Load_9"]]
+```{r Load4}
+x           <- mash.model$fitted_g$Ulist[["ED_Load_4"]]
 colnames(x) <- row.names(L)
 rownames(x) <- colnames(x)
 corrplot(x, method='color', cl.lim=c(-0.2,1), type='upper', addCoef.col = "black", tl.col="black", tl.srt=45, col=colorRampPalette(c("blue","white","red"))(200))
 ```
 
-```{r Load9 pca}
+```{r Load4 pca}
 layout(matrix(c(1,2,3,4), 2, 2, byrow=TRUE))
-svd.out = svd(mash.model$fitted_g$Ulist[["ED_Load_9"]])
+svd.out = svd(mash.model$fitted_g$Ulist[["ED_Load_4"]])
 v = svd.out$v
 colnames(v) = row.names(L)
 rownames(v) = colnames(v)
 options(repr.plot.width=10, repr.plot.height=5)
 for (j in 1:4)
   barplot(v[,j]/v[,j][which.max(abs(v[,j]))], cex.names = 0.7,
-          las = 2, main = paste0("EigenVector ", j, " for Load 9"))
-```
-
-Check Load 8 covariance matrix
-
-```{r Load8}
-x           <- mash.model$fitted_g$Ulist[["ED_Load_8"]]
-colnames(x) <- row.names(L)
-rownames(x) <- colnames(x)
-corrplot(x, method='color', cl.lim=c(-0.2,1), type='upper', addCoef.col = "black", tl.col="black", tl.srt=45, col=colorRampPalette(c("blue","white","red"))(200))
-```
-
-```{r Load8 pca}
-layout(matrix(c(1,2,3,4), 2, 2, byrow=TRUE))
-svd.out = svd(mash.model$fitted_g$Ulist[["ED_Load_8"]])
-v = svd.out$v
-colnames(v) = row.names(L)
-rownames(v) = colnames(v)
-options(repr.plot.width=10, repr.plot.height=5)
-for (j in 1:4)
-  barplot(v[,j]/v[,j][which.max(abs(v[,j]))], cex.names = 0.7,
-          las = 2, main = paste0("EigenVector ", j, " for Load 8"))
-```
-
-Check PCA1 covariance matrix
-
-```{r PCA1}
-x           <- mash.model$fitted_g$Ulist[["ED_PCA_1"]]
-colnames(x) <- row.names(L)
-rownames(x) <- colnames(x)
-corrplot(x, method='color', cl.lim=c(-0.2,1), type='upper', addCoef.col = "black", tl.col="black", tl.srt=45, col=colorRampPalette(c("blue","white","red"))(200))
-```
-
-```{r PCA1 pca}
-layout(matrix(c(1,2,3,4), 2, 2, byrow=TRUE))
-svd.out = svd(mash.model$fitted_g$Ulist[["ED_PCA_1"]])
-v = svd.out$v
-colnames(v) = row.names(L)
-rownames(v) = colnames(v)
-options(repr.plot.width=10, repr.plot.height=5)
-for (j in 1:4)
-  barplot(v[,j]/v[,j][which.max(abs(v[,j]))], cex.names = 0.7,
-          las = 2, main = paste0("EigenVector ", j, " for PCA 1"))
+          las = 2, main = paste0("EigenVector ", j, " for Load 4"))
 ```
 
 There are `r length(get_significant_results(mash.model))` diferentially expressed genes.
