@@ -1,7 +1,7 @@
 ---
-title: "Mashcommonbaseline_IBD"
+title: "Mash"
 author: "Yuxin Zou"
-date: 2018-5-9
+date: 2018-5-10
 output: 
   workflowr::wflow_html:
     code_folding: hide
@@ -17,29 +17,21 @@ library(flashr); library(colorRamps); library(corrplot)
 ```
 
 ```{r data}
-data = readRDS('../data/results/Microarray_compiledGLM_IBD.rds')
+data = readRDS('../data/results/control/CompiledData.rds')
 ```
 
 ## Mash
 
-The standard errors in the data are from t distribution with df 733. Since `pt(-abs(Bhat/Shat), df)` is very close to zero, it is hard to obtain the standard error from the normal distribution. The degree of freedom is large here, we use the original standard error.
-
 ```{r mash.data}
-mash.data = mash_set_data(Bhat = data$Chat, Shat = data$SE)
-L = diag(ncol(data$Chat))
-# the 4th col is CTL
-L[,4] = -1
-row.names(L) = colnames(data$Chat)
-L = L[-4,]
-mash.data.diff = mash_set_data_contrast(mash.data, L)
+mash.data = mash_set_data(Bhat = data$beta, pval = data$p)
 ```
 
 Top genes:
 ```{r top genes}
 # find strong genes
-m.1by1 = mash_1by1(mash.data.diff, alpha=0)
+m.1by1 = mash_1by1(mash.data, alpha=0)
 strong = get_significant_results(m.1by1)
-Z = mash.data.diff$Bhat/mash.data.diff$Shat
+Z = mash.data$Bhat/mash.data$Shat
 Z.strong = Z[strong,]
 # center
 Z.center = apply(Z.strong, 2, function(x) x - mean(x))
@@ -56,7 +48,7 @@ fmodel = flash(flash.data, greedy = TRUE, backfit = TRUE)
 ```
 ```{r flash plot}
 factors = flash_get_ldf(fmodel)$f
-row.names(factors) = row.names(L)
+row.names(factors) = colnames(data$beta)
 pve.order = order(flash_get_pve(fmodel), decreasing = TRUE)
 
 par(mfrow=c(1,3))
@@ -115,29 +107,19 @@ U.c = cov_canonical(mash_set_data(Z.center))
 ```
 
 Extreme Deconvolution
-```{r ED, eval=FALSE}
+```{r ED}
 U.dd = c(U.pca, U.loading, U.Flash, list('XX' = t(Z.center) %*% Z.center / nrow(Z.center)))
 
-mash.data.ed = mash.data.diff
-mash.data.ed$Bhat = mash.data.diff$Bhat[strong,]
-mash.data.ed$Shat = mash.data.diff$Shat[strong,]
-mash.data.ed$Shat_alpha = mash.data.diff$Shat_alpha[strong,]
-saveRDS(cov_ed(mash.data.ed, U.dd), '../output/MashCB_EE_Cov_IBD.rds')
+U.ed = cov_ed(mash.data, U.dd, strong)
 ```
 
 ### Mash model:
-```{r}
-U.ed = readRDS('../output/MashCB_EE_Cov_IBD.rds')
-```
 
-```{r mash, eval=FALSE}
-saveRDS(mash(mash.data.diff, c(U.c, U.ed), algorithm.version = 'R'), '../output/MashCB_model_EE_IBD.rds') 
+```{r mash}
+mash.model = mash(mash.data, c(U.c, U.ed))
 ```
 
 ## Result
-```{r}
-mash.model = readRDS('../output/MashCB_model_EE_IBD.rds')
-```
 
 The log-likelihood of fit is
 ```{r loglik} 
@@ -149,88 +131,25 @@ options(repr.plot.width=12, repr.plot.height=4)
 barplot(get_estimated_pi(mash.model), las = 2, cex.names = 0.7)
 ```
 
-Check tPCA covariance matrix
+Check XX covariance matrix
 
-```{r tPCA}
-x           <- mash.model$fitted_g$Ulist[["ED_tPCA"]]
-colnames(x) <- row.names(L)
-rownames(x) <- colnames(x)
-corrplot(x, method='color', cl.lim=c(-0.1,1), type='upper', addCoef.col = "black", tl.col="black", tl.srt=45, col=colorRampPalette(c("blue","white","red"))(200))
-```
-
-```{r tPCA pca}
-layout(matrix(c(1,2,3,4), 2, 2, byrow=TRUE))
-svd.out = svd(mash.model$fitted_g$Ulist[["ED_tPCA"]])
-v = svd.out$v
-colnames(v) = row.names(L)
-rownames(v) = colnames(v)
-options(repr.plot.width=10, repr.plot.height=5)
-for (j in 1:4)
-  barplot(v[,j]/v[,j][which.max(abs(v[,j]))], cex.names = 0.7,
-          las = 2, main = paste0("EigenVector ", j, " for tPCA"))
-```
-
-Check Load 9 covariance matrix
-
-```{r Load9}
-x           <- mash.model$fitted_g$Ulist[["ED_Load_9"]]
-colnames(x) <- row.names(L)
+```{r XX}
+x           <- mash.model$fitted_g$Ulist[["ED_XX"]]
+colnames(x) <- colnames(data$beta)
 rownames(x) <- colnames(x)
 corrplot(x, method='color', cl.lim=c(-0.2,1), type='upper', addCoef.col = "black", tl.col="black", tl.srt=45, col=colorRampPalette(c("blue","white","red"))(200))
 ```
 
-```{r Load9 pca}
+```{r XX pca}
 layout(matrix(c(1,2,3,4), 2, 2, byrow=TRUE))
-svd.out = svd(mash.model$fitted_g$Ulist[["ED_Load_9"]])
+svd.out = svd(mash.model$fitted_g$Ulist[["ED_XX"]])
 v = svd.out$v
-colnames(v) = row.names(L)
+colnames(v) = colnames(data$beta)
 rownames(v) = colnames(v)
 options(repr.plot.width=10, repr.plot.height=5)
 for (j in 1:4)
   barplot(v[,j]/v[,j][which.max(abs(v[,j]))], cex.names = 0.7,
-          las = 2, main = paste0("EigenVector ", j, " for Load 9"))
-```
-
-Check Load 8 covariance matrix
-
-```{r Load8}
-x           <- mash.model$fitted_g$Ulist[["ED_Load_8"]]
-colnames(x) <- row.names(L)
-rownames(x) <- colnames(x)
-corrplot(x, method='color', cl.lim=c(-0.2,1), type='upper', addCoef.col = "black", tl.col="black", tl.srt=45, col=colorRampPalette(c("blue","white","red"))(200))
-```
-
-```{r Load8 pca}
-layout(matrix(c(1,2,3,4), 2, 2, byrow=TRUE))
-svd.out = svd(mash.model$fitted_g$Ulist[["ED_Load_8"]])
-v = svd.out$v
-colnames(v) = row.names(L)
-rownames(v) = colnames(v)
-options(repr.plot.width=10, repr.plot.height=5)
-for (j in 1:4)
-  barplot(v[,j]/v[,j][which.max(abs(v[,j]))], cex.names = 0.7,
-          las = 2, main = paste0("EigenVector ", j, " for Load 8"))
-```
-
-Check PCA1 covariance matrix
-
-```{r PCA1}
-x           <- mash.model$fitted_g$Ulist[["ED_PCA_1"]]
-colnames(x) <- row.names(L)
-rownames(x) <- colnames(x)
-corrplot(x, method='color', cl.lim=c(-0.2,1), type='upper', addCoef.col = "black", tl.col="black", tl.srt=45, col=colorRampPalette(c("blue","white","red"))(200))
-```
-
-```{r PCA1 pca}
-layout(matrix(c(1,2,3,4), 2, 2, byrow=TRUE))
-svd.out = svd(mash.model$fitted_g$Ulist[["ED_PCA_1"]])
-v = svd.out$v
-colnames(v) = row.names(L)
-rownames(v) = colnames(v)
-options(repr.plot.width=10, repr.plot.height=5)
-for (j in 1:4)
-  barplot(v[,j]/v[,j][which.max(abs(v[,j]))], cex.names = 0.7,
-          las = 2, main = paste0("EigenVector ", j, " for PCA 1"))
+          las = 2, main = paste0("EigenVector ", j, " for XX"))
 ```
 
 There are `r length(get_significant_results(mash.model))` diferentially expressed genes.
@@ -240,7 +159,7 @@ Check pairwise sharing by magnitude and sign:
 x = get_pairwise_sharing(mash.model)
 x[x > 1]    <- 1
 x[x < -1]   <- -1
-colnames(x) <- row.names(L)
+colnames(x) <- colnames(data$beta)
 rownames(x) <- colnames(x)
 corrplot.mixed(x, tl.pos="d",upper='color', cl.lim=c(0,1), upper.col=colorRampPalette(rev(c("#D73027","#FC8D59","#FEE090","#FFFFBF",
                                "#E0F3F8","#91BFDB","#4575B4")))(40),
@@ -252,7 +171,7 @@ Check pairwise sharing by sign:
 x = get_pairwise_sharing(mash.model, factor=0)
 x[x > 1]    <- 1
 x[x < -1]   <- -1
-colnames(x) <- row.names(L)
+colnames(x) <- colnames(data$beta)
 rownames(x) <- colnames(x)
 corrplot.mixed(x, tl.pos="d",upper='color', cl.lim=c(0,1), upper.col=colorRampPalette(rev(c("#D73027","#FC8D59","#FEE090","#FFFFBF",
                                "#E0F3F8","#91BFDB","#4575B4")))(40),
