@@ -62,7 +62,7 @@ factors = flash_get_ldf(fmodel)$f
 row.names(factors) = row.names(L)
 pve.order = order(flash_get_pve(fmodel), decreasing = TRUE)
 
-par(mfrow=c(1,3))
+par(mfrow=c(2,2))
 for(i in pve.order){
   barplot(factors[,i], main=paste0('Factor ',i, ' pve= ', round(flash_get_pve(fmodel)[i],3)), las=2, cex.names = 0.7)
 }
@@ -71,8 +71,8 @@ par(mfrow=c(1,1))
 
 `flash` on the loading:
 ```{r flashLoading}
-loading = fmodel$EL[,1:3]
-colnames(loading) = paste0('Factor',seq(1,3))
+loading = fmodel$EL[,1:4]
+colnames(loading) = paste0('Factor',seq(1,4))
 flash.loading = flash_set_data(loading)
 flmodel = flash(flash.loading, greedy = TRUE, backfit = TRUE)
 ```
@@ -97,7 +97,7 @@ for (i in 1:length(U_list)){
   ll[[i]] = U_list[[i]] + mu_list[[i]] %*% t(mu_list[[i]])
 }
 
-Factors = fmodel$EF[,1:3]
+Factors = fmodel$EF[,1:4]
 U.loading = lapply(ll, function(U){Factors %*% (U %*% t(Factors))})
 names(U.loading) = paste0('Load', "_", (1:length(U.loading)))
 
@@ -152,25 +152,25 @@ options(repr.plot.width=12, repr.plot.height=4)
 barplot(get_estimated_pi(mash.model), las = 2, cex.names = 0.7)
 ```
 
-Check tPCA covariance matrix
+Check Load 2 covariance matrix
 
-```{r tPCA}
-x           <- mash.model$fitted_g$Ulist[["ED_tPCA"]]
+```{r Load2}
+x           <- mash.model$fitted_g$Ulist[["ED_Load_2"]]
 colnames(x) <- row.names(L)
 rownames(x) <- colnames(x)
-corrplot(x, method='color', cl.lim=c(-0.1,1), type='upper', addCoef.col = "black", tl.col="black", tl.srt=45, col=colorRampPalette(c("blue","white","red"))(200))
+corrplot(x, method='color', cl.lim=c(-0.2,1), type='upper', addCoef.col = "black", tl.col="black", tl.srt=45, col=colorRampPalette(c("blue","white","red"))(200))
 ```
 
-```{r tPCA pca}
+```{r Load2 pca}
 layout(matrix(c(1,2,3,4), 2, 2, byrow=TRUE))
-svd.out = svd(mash.model$fitted_g$Ulist[["ED_tPCA"]])
+svd.out = svd(mash.model$fitted_g$Ulist[["ED_Load_2"]])
 v = svd.out$v
 colnames(v) = row.names(L)
 rownames(v) = colnames(v)
 options(repr.plot.width=10, repr.plot.height=5)
 for (j in 1:4)
   barplot(v[,j]/v[,j][which.max(abs(v[,j]))], cex.names = 0.7,
-          las = 2, main = paste0("EigenVector ", j, " for tPCA"))
+          las = 2, main = paste0("EigenVector ", j, " for Load 2"))
 ```
 
 Check Load 4 covariance matrix
@@ -194,19 +194,49 @@ for (j in 1:4)
           las = 2, main = paste0("EigenVector ", j, " for Load 4"))
 ```
 
-There are `r length(get_significant_results(mash.model))` diferentially expressed genes.
+Check tFlash covariance matrix
 
-Check pairwise sharing by magnitude and sign:
-```{r}
-x = get_pairwise_sharing(mash.model)
-x[x > 1]    <- 1
-x[x < -1]   <- -1
+```{r tFlash}
+x           <- mash.model$fitted_g$Ulist[["ED_tFlash"]]
 colnames(x) <- row.names(L)
 rownames(x) <- colnames(x)
-corrplot.mixed(x, tl.pos="d",upper='color', cl.lim=c(0,1), upper.col=colorRampPalette(rev(c("#D73027","#FC8D59","#FEE090","#FFFFBF",
-                               "#E0F3F8","#91BFDB","#4575B4")))(40),
-               tl.cex=1.2)
+corrplot(x, method='color', cl.lim=c(-0.1,1), type='upper', addCoef.col = "black", tl.col="black", tl.srt=45, col=colorRampPalette(c("blue","white","red"))(200))
 ```
+
+```{r tFlash pca}
+layout(matrix(c(1,2,3,4), 2, 2, byrow=TRUE))
+svd.out = svd(mash.model$fitted_g$Ulist[["ED_tFlash"]])
+v = svd.out$v
+colnames(v) = row.names(L)
+rownames(v) = colnames(v)
+options(repr.plot.width=10, repr.plot.height=5)
+for (j in 1:4)
+  barplot(v[,j]/v[,j][which.max(abs(v[,j]))], cex.names = 0.7,
+          las = 2, main = paste0("EigenVector ", j, " for tFlash"))
+```
+
+Check Flash2 covariance matrix
+
+```{r Flash2}
+x           <- mash.model$fitted_g$Ulist[["ED_Flash_2"]]
+colnames(x) <- row.names(L)
+rownames(x) <- colnames(x)
+corrplot(x, method='color', cl.lim=c(-0.1,1), type='upper', addCoef.col = "black", tl.col="black", tl.srt=45, col=colorRampPalette(c("blue","white","red"))(200))
+```
+
+```{r Flash2 pca}
+layout(matrix(c(1,2,3,4), 2, 2, byrow=TRUE))
+svd.out = svd(mash.model$fitted_g$Ulist[["ED_Flash_2"]])
+v = svd.out$v
+colnames(v) = row.names(L)
+rownames(v) = colnames(v)
+options(repr.plot.width=10, repr.plot.height=5)
+for (j in 1:4)
+  barplot(v[,j]/v[,j][which.max(abs(v[,j]))], cex.names = 0.7,
+          las = 2, main = paste0("EigenVector ", j, " for Flash 2"))
+```
+
+There are `r length(get_significant_results(mash.model))` diferentially expressed genes.
 
 Check pairwise sharing by sign:
 ```{r}
@@ -220,3 +250,57 @@ corrplot.mixed(x, tl.pos="d",upper='color', cl.lim=c(0,1), upper.col=colorRampPa
                tl.cex=1.2)
 ```
 
+Check pairwise sharing by magnitude and sign:
+```{r}
+x = get_pairwise_sharing(mash.model)
+x[x > 1]    <- 1
+x[x < -1]   <- -1
+colnames(x) <- row.names(L)
+rownames(x) <- colnames(x)
+corrplot.mixed(x, tl.pos="d",upper='color', cl.lim=c(0,1), upper.col=colorRampPalette(rev(c("#D73027","#FC8D59","#FEE090","#FFFFBF",
+                               "#E0F3F8","#91BFDB","#4575B4")))(40),
+               tl.cex=1.2)
+```
+
+* Effects compare with SCZ
+
+```{r}
+CompareSCZ = diag(5)
+CompareSCZ[,5] = -1
+CompareSCZ = CompareSCZ[-5,]
+row.names(CompareSCZ) = colnames(mash.data.diff$Bhat)[-5]
+```
+
+```{r, eval=FALSE}
+mash.model.SCZ = mash.model
+mash.model.SCZ$result = mash_compute_posterior_matrices(mash.model, mash.data.diff, A=CompareSCZ, algorithm.version = 'R')
+saveRDS(mash.model.SCZ, '../output/MashCB_model_EE_CompareSCZ.rds') 
+```
+
+```{r echo=FALSE}
+mash.model.SCZ = readRDS('../output/MashCB_model_EE_CompareSCZ.rds')
+```
+
+Check pairwise sharing by sign:
+```{r}
+x = get_pairwise_sharing(mash.model.SCZ, factor=0)
+x[x > 1]    <- 1
+x[x < -1]   <- -1
+colnames(x) <- row.names(CompareSCZ)
+rownames(x) <- colnames(x)
+corrplot.mixed(x, tl.pos="d",upper='color', cl.lim=c(0,1), upper.col=colorRampPalette(rev(c("#D73027","#FC8D59","#FEE090","#FFFFBF",
+                               "#E0F3F8","#91BFDB","#4575B4")))(40),
+               tl.cex=1.2)
+```
+
+Check pairwise sharing by magnitude and sign:
+```{r}
+x = get_pairwise_sharing(mash.model.SCZ)
+x[x > 1]    <- 1
+x[x < -1]   <- -1
+colnames(x) <- row.names(CompareSCZ)
+rownames(x) <- colnames(x)
+corrplot.mixed(x, tl.pos="d",upper='color', cl.lim=c(0,1), upper.col=colorRampPalette(rev(c("#D73027","#FC8D59","#FEE090","#FFFFBF",
+                               "#E0F3F8","#91BFDB","#4575B4")))(40),
+               tl.cex=1.2)
+```
