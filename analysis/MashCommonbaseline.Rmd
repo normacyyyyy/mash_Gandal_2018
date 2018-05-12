@@ -22,7 +22,7 @@ data = readRDS('../data/results/Microarray_compiledGLM.rds')
 
 ## Mash
 
-The standard errors in the data are from t distribution with df 733. Since `pt(-abs(Bhat/Shat), df)` is very close to zero, it is hard to obtain the standard error from the normal distribution. The degree of freedom is large here, we use the original standard error.
+The standard errors in the data are from t distribution with df 452. Since `pt(-abs(Bhat/Shat), df)` is very close to zero, it is hard to obtain the standard error from the normal distribution. The degree of freedom is large here, we use the original standard error.
 
 ```{r mash.data}
 mash.data = mash_set_data(Bhat = data$Chat, Shat = data$SE)
