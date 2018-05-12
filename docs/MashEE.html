@@ -334,7 +334,7 @@ div.section {
 </div>
 
 
-<p><strong>Last updated:</strong> 2018-05-11</p>
+<p><strong>Last updated:</strong> 2018-05-12</p>
 <strong>workflowr checks:</strong> <small>(Click a bullet for more information)</small>
 <ul>
 <li>
@@ -358,7 +358,7 @@ div.section {
 </details>
 </li>
 <li>
-<p><details> <summary> <strong style="color:blue;">✔</strong> <strong>Repository version:</strong> <a href="https://github.com/zouyuxin/mash_Gandal_2018/tree/24354dbc05fcb4f5e53fa934aa0f64aa80014709" target="_blank">24354db</a> </summary></p>
+<p><details> <summary> <strong style="color:blue;">✔</strong> <strong>Repository version:</strong> <a href="https://github.com/zouyuxin/mash_Gandal_2018/tree/4c2def79fa2025d9c0ffde7ff6f7e9808d4a910c" target="_blank">4c2def7</a> </summary></p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
 <pre><code>
 Ignored files:
@@ -426,6 +426,40 @@ Message
 Rmd
 </td>
 <td style="text-align:left;">
+<a href="https://github.com/zouyuxin/mash_Gandal_2018/blob/4c2def79fa2025d9c0ffde7ff6f7e9808d4a910c/analysis/MashEE.Rmd" target="_blank">4c2def7</a>
+</td>
+<td style="text-align:left;">
+zouyuxin
+</td>
+<td style="text-align:left;">
+2018-05-12
+</td>
+<td style="text-align:left;">
+wflow_publish(“analysis/MashEE.Rmd”)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+html
+</td>
+<td style="text-align:left;">
+<a href="https://cdn.rawgit.com/zouyuxin/mash_Gandal_2018/c74944f2ce592f8e3656ac3452f48f1a96fb16be/docs/MashEE.html" target="_blank">c74944f</a>
+</td>
+<td style="text-align:left;">
+zouyuxin
+</td>
+<td style="text-align:left;">
+2018-05-11
+</td>
+<td style="text-align:left;">
+Build site.
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Rmd
+</td>
+<td style="text-align:left;">
 <a href="https://github.com/zouyuxin/mash_Gandal_2018/blob/24354dbc05fcb4f5e53fa934aa0f64aa80014709/analysis/MashEE.Rmd" target="_blank">24354db</a>
 </td>
 <td style="text-align:left;">
@@ -452,7 +486,7 @@ Attaching package: &#39;mclust&#39;</code></pre>
 <pre><code>The following object is masked from &#39;package:ashr&#39;:
 
     dens</code></pre>
-<pre class="r"><code>library(flashr); library(colorRamps); library(corrplot)</code></pre>
+<pre class="r"><code>library(flashr); library(colorRamps); library(corrplot); library(ggplot2)</code></pre>
 <pre><code>corrplot 0.84 loaded</code></pre>
 <pre class="r"><code>data = readRDS(&#39;../data/results/control/CompiledData.rds&#39;)</code></pre>
 <div id="mash" class="section level2">
@@ -485,6 +519,36 @@ for(i in pve.order){
   barplot(factors[,i], main=paste0(&#39;Factor &#39;,i, &#39; pve= &#39;, round(flash_get_pve(fmodel)[i],3)), las=2, cex.names = 0.7)
 }</code></pre>
 <p><img src="figure/MashEE.Rmd/flash%20plot-1.png" width="672" style="display: block; margin: auto;" /></p>
+<details> <summary><em>Expand here to see past versions of flash plot-1.png:</em></summary>
+<table style="border-collapse:separate; border-spacing:5px;">
+<thead>
+<tr>
+<th style="text-align:left;">
+Version
+</th>
+<th style="text-align:left;">
+Author
+</th>
+<th style="text-align:left;">
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+<a href="https://github.com/zouyuxin/mash_Gandal_2018/blob/c74944f2ce592f8e3656ac3452f48f1a96fb16be/docs/figure/MashEE.Rmd/flash plot-1.png" target="_blank">c74944f</a>
+</td>
+<td style="text-align:left;">
+zouyuxin
+</td>
+<td style="text-align:left;">
+2018-05-11
+</td>
+</tr>
+</tbody>
+</table>
+<p></details></p>
 <pre class="r"><code>par(mfrow=c(1,1))</code></pre>
 <p><code>flash</code> on the loading:</p>
 <pre class="r"><code>loading = fmodel$EL[,1:3]
@@ -530,7 +594,7 @@ U.ed = cov_ed(mash.data, U.dd, strong)</code></pre>
 <h3>Mash model:</h3>
 <pre class="r"><code>mash.model = mash(mash.data, c(U.c, U.ed))</code></pre>
 <pre><code> - Computing 11200 x 651 likelihood matrix.
- - Likelihood calculations took 6.74 seconds.
+ - Likelihood calculations took 7.98 seconds.
  - Fitting model with 651 mixture components.</code></pre>
 <pre><code>Warning in REBayes::KWDual(A, rep(1, k), normalize(w), control = control): estimated mixing distribution has some negative values:
                consider reducing rtol</code></pre>
@@ -538,9 +602,9 @@ U.ed = cov_ed(mash.data, U.dd, strong)</code></pre>
 0.107339052191479, : Optimization step yields mixture weights that are
 either too small, or negative; weights have been corrected and renormalized
 after the optimization.</code></pre>
-<pre><code> - Model fitting took 14.94 seconds.
+<pre><code> - Model fitting took 19.68 seconds.
  - Computing posterior matrices.
- - Computation allocated took 0.58 seconds.</code></pre>
+ - Computation allocated took 0.69 seconds.</code></pre>
 </div>
 </div>
 <div id="result" class="section level2">
@@ -552,12 +616,72 @@ after the optimization.</code></pre>
 <pre class="r"><code>options(repr.plot.width=12, repr.plot.height=4)
 barplot(get_estimated_pi(mash.model), las = 2, cex.names = 0.7)</code></pre>
 <p><img src="figure/MashEE.Rmd/estimated%20weight-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>Check XX covariance matrix</p>
+<details> <summary><em>Expand here to see past versions of estimated weight-1.png:</em></summary>
+<table style="border-collapse:separate; border-spacing:5px;">
+<thead>
+<tr>
+<th style="text-align:left;">
+Version
+</th>
+<th style="text-align:left;">
+Author
+</th>
+<th style="text-align:left;">
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+<a href="https://github.com/zouyuxin/mash_Gandal_2018/blob/c74944f2ce592f8e3656ac3452f48f1a96fb16be/docs/figure/MashEE.Rmd/estimated weight-1.png" target="_blank">c74944f</a>
+</td>
+<td style="text-align:left;">
+zouyuxin
+</td>
+<td style="text-align:left;">
+2018-05-11
+</td>
+</tr>
+</tbody>
+</table>
+<p></details></p>
+<p>Check XX covariance matrix:</p>
 <pre class="r"><code>x           &lt;- mash.model$fitted_g$Ulist[[&quot;ED_XX&quot;]]
 colnames(x) &lt;- colnames(data$beta)
 rownames(x) &lt;- colnames(x)
 corrplot(x, method=&#39;color&#39;, cl.lim=c(-0.2,1), type=&#39;upper&#39;, addCoef.col = &quot;black&quot;, tl.col=&quot;black&quot;, tl.srt=45, col=colorRampPalette(c(&quot;blue&quot;,&quot;white&quot;,&quot;red&quot;))(200))</code></pre>
 <p><img src="figure/MashEE.Rmd/XX-1.png" width="672" style="display: block; margin: auto;" /></p>
+<details> <summary><em>Expand here to see past versions of XX-1.png:</em></summary>
+<table style="border-collapse:separate; border-spacing:5px;">
+<thead>
+<tr>
+<th style="text-align:left;">
+Version
+</th>
+<th style="text-align:left;">
+Author
+</th>
+<th style="text-align:left;">
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+<a href="https://github.com/zouyuxin/mash_Gandal_2018/blob/c74944f2ce592f8e3656ac3452f48f1a96fb16be/docs/figure/MashEE.Rmd/XX-1.png" target="_blank">c74944f</a>
+</td>
+<td style="text-align:left;">
+zouyuxin
+</td>
+<td style="text-align:left;">
+2018-05-11
+</td>
+</tr>
+</tbody>
+</table>
+<p></details></p>
 <pre class="r"><code>layout(matrix(c(1,2,3,4), 2, 2, byrow=TRUE))
 svd.out = svd(mash.model$fitted_g$Ulist[[&quot;ED_XX&quot;]])
 v = svd.out$v
@@ -568,17 +692,37 @@ for (j in 1:4)
   barplot(v[,j]/v[,j][which.max(abs(v[,j]))], cex.names = 0.7,
           las = 2, main = paste0(&quot;EigenVector &quot;, j, &quot; for XX&quot;))</code></pre>
 <p><img src="figure/MashEE.Rmd/XX%20pca-1.png" width="672" style="display: block; margin: auto;" /></p>
+<details> <summary><em>Expand here to see past versions of XX pca-1.png:</em></summary>
+<table style="border-collapse:separate; border-spacing:5px;">
+<thead>
+<tr>
+<th style="text-align:left;">
+Version
+</th>
+<th style="text-align:left;">
+Author
+</th>
+<th style="text-align:left;">
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+<a href="https://github.com/zouyuxin/mash_Gandal_2018/blob/c74944f2ce592f8e3656ac3452f48f1a96fb16be/docs/figure/MashEE.Rmd/XX pca-1.png" target="_blank">c74944f</a>
+</td>
+<td style="text-align:left;">
+zouyuxin
+</td>
+<td style="text-align:left;">
+2018-05-11
+</td>
+</tr>
+</tbody>
+</table>
+<p></details></p>
 <p>There are 4504 diferentially expressed genes.</p>
-<p>Check pairwise sharing by magnitude and sign:</p>
-<pre class="r"><code>x = get_pairwise_sharing(mash.model)
-x[x &gt; 1]    &lt;- 1
-x[x &lt; -1]   &lt;- -1
-colnames(x) &lt;- colnames(data$beta)
-rownames(x) &lt;- colnames(x)
-corrplot.mixed(x, tl.pos=&quot;d&quot;,upper=&#39;color&#39;, cl.lim=c(0,1), upper.col=colorRampPalette(rev(c(&quot;#D73027&quot;,&quot;#FC8D59&quot;,&quot;#FEE090&quot;,&quot;#FFFFBF&quot;,
-                               &quot;#E0F3F8&quot;,&quot;#91BFDB&quot;,&quot;#4575B4&quot;)))(40),
-               tl.cex=1.2)</code></pre>
-<p><img src="figure/MashEE.Rmd/unnamed-chunk-1-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>Check pairwise sharing by sign:</p>
 <pre class="r"><code>x = get_pairwise_sharing(mash.model, factor=0)
 x[x &gt; 1]    &lt;- 1
@@ -588,7 +732,106 @@ rownames(x) &lt;- colnames(x)
 corrplot.mixed(x, tl.pos=&quot;d&quot;,upper=&#39;color&#39;, cl.lim=c(0,1), upper.col=colorRampPalette(rev(c(&quot;#D73027&quot;,&quot;#FC8D59&quot;,&quot;#FEE090&quot;,&quot;#FFFFBF&quot;,
                                &quot;#E0F3F8&quot;,&quot;#91BFDB&quot;,&quot;#4575B4&quot;)))(40),
                tl.cex=1.2)</code></pre>
+<p><img src="figure/MashEE.Rmd/unnamed-chunk-1-1.png" width="672" style="display: block; margin: auto;" /></p>
+<details> <summary><em>Expand here to see past versions of unnamed-chunk-1-1.png:</em></summary>
+<table style="border-collapse:separate; border-spacing:5px;">
+<thead>
+<tr>
+<th style="text-align:left;">
+Version
+</th>
+<th style="text-align:left;">
+Author
+</th>
+<th style="text-align:left;">
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+<a href="https://github.com/zouyuxin/mash_Gandal_2018/blob/c74944f2ce592f8e3656ac3452f48f1a96fb16be/docs/figure/MashEE.Rmd/unnamed-chunk-1-1.png" target="_blank">c74944f</a>
+</td>
+<td style="text-align:left;">
+zouyuxin
+</td>
+<td style="text-align:left;">
+2018-05-11
+</td>
+</tr>
+</tbody>
+</table>
+<p></details></p>
+<p>Check pairwise sharing by magnitude and sign:</p>
+<pre class="r"><code>x = get_pairwise_sharing(mash.model)
+x[x &gt; 1]    &lt;- 1
+x[x &lt; -1]   &lt;- -1
+colnames(x) &lt;- colnames(data$beta)
+rownames(x) &lt;- colnames(x)
+corrplot.mixed(x, tl.pos=&quot;d&quot;,upper=&#39;color&#39;, cl.lim=c(0,1), upper.col=colorRampPalette(rev(c(&quot;#D73027&quot;,&quot;#FC8D59&quot;,&quot;#FEE090&quot;,&quot;#FFFFBF&quot;,
+                               &quot;#E0F3F8&quot;,&quot;#91BFDB&quot;,&quot;#4575B4&quot;)))(40),
+               tl.cex=1.2)</code></pre>
 <p><img src="figure/MashEE.Rmd/unnamed-chunk-2-1.png" width="672" style="display: block; margin: auto;" /></p>
+<details> <summary><em>Expand here to see past versions of unnamed-chunk-2-1.png:</em></summary>
+<table style="border-collapse:separate; border-spacing:5px;">
+<thead>
+<tr>
+<th style="text-align:left;">
+Version
+</th>
+<th style="text-align:left;">
+Author
+</th>
+<th style="text-align:left;">
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+<a href="https://github.com/zouyuxin/mash_Gandal_2018/blob/c74944f2ce592f8e3656ac3452f48f1a96fb16be/docs/figure/MashEE.Rmd/unnamed-chunk-2-1.png" target="_blank">c74944f</a>
+</td>
+<td style="text-align:left;">
+zouyuxin
+</td>
+<td style="text-align:left;">
+2018-05-11
+</td>
+</tr>
+</tbody>
+</table>
+<p></details></p>
+<ul>
+<li>Effects compare with SCZ</li>
+</ul>
+<pre class="r"><code>CompareSCZ = diag(5)
+CompareSCZ[,2] = -1
+CompareSCZ = CompareSCZ[-2,]
+row.names(CompareSCZ) = colnames(data$beta)[-2]</code></pre>
+<pre class="r"><code>mash.model.SCZ = mash.model
+mash.model.SCZ$result = mash_compute_posterior_matrices(mash.model, mash.data, A=CompareSCZ, algorithm.version = &#39;R&#39;)</code></pre>
+<p>Check pairwise sharing by sign:</p>
+<pre class="r"><code>x = get_pairwise_sharing(mash.model.SCZ, factor=0)
+x[x &gt; 1]    &lt;- 1
+x[x &lt; -1]   &lt;- -1
+colnames(x) &lt;- row.names(CompareSCZ)
+rownames(x) &lt;- colnames(x)
+corrplot.mixed(x, tl.pos=&quot;d&quot;,upper=&#39;color&#39;, cl.lim=c(0,1), upper.col=colorRampPalette(rev(c(&quot;#D73027&quot;,&quot;#FC8D59&quot;,&quot;#FEE090&quot;,&quot;#FFFFBF&quot;,
+                               &quot;#E0F3F8&quot;,&quot;#91BFDB&quot;,&quot;#4575B4&quot;)))(40),
+               tl.cex=1.2)</code></pre>
+<p><img src="figure/MashEE.Rmd/unnamed-chunk-5-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Check pairwise sharing by magnitude and sign:</p>
+<pre class="r"><code>x = get_pairwise_sharing(mash.model.SCZ)
+x[x &gt; 1]    &lt;- 1
+x[x &lt; -1]   &lt;- -1
+colnames(x) &lt;- row.names(CompareSCZ)
+rownames(x) &lt;- colnames(x)
+corrplot.mixed(x, tl.pos=&quot;d&quot;,upper=&#39;color&#39;, cl.lim=c(0,1), upper.col=colorRampPalette(rev(c(&quot;#D73027&quot;,&quot;#FC8D59&quot;,&quot;#FEE090&quot;,&quot;#FFFFBF&quot;,
+                               &quot;#E0F3F8&quot;,&quot;#91BFDB&quot;,&quot;#4575B4&quot;)))(40),
+               tl.cex=1.2)</code></pre>
+<p><img src="figure/MashEE.Rmd/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <div id="session-information" class="section level2">
 <h2>Session information</h2>
@@ -608,8 +851,9 @@ attached base packages:
 [1] stats     graphics  grDevices utils     datasets  methods   base     
 
 other attached packages:
-[1] corrplot_0.84  colorRamps_2.3 flashr_0.5-6   plyr_1.8.4    
-[5] mclust_5.4     mashr_0.2-6    ashr_2.2-7     limma_3.34.9  
+[1] ggplot2_2.2.1  corrplot_0.84  colorRamps_2.3 flashr_0.5-6  
+[5] plyr_1.8.4     mclust_5.4     mashr_0.2-6    ashr_2.2-7    
+[9] limma_3.34.9  
 
 loaded via a namespace (and not attached):
  [1] Rcpp_0.12.16             pillar_1.2.2            
@@ -626,17 +870,16 @@ loaded via a namespace (and not attached):
 [23] knitr_1.20               REBayes_1.3             
 [25] rprojroot_1.3-2          grid_3.4.4              
 [27] rmarkdown_1.9            rmeta_3.0               
-[29] ggplot2_2.2.1            magrittr_1.5            
-[31] whisker_0.3-2            scales_0.5.0            
-[33] backports_1.1.2          codetools_0.2-15        
-[35] htmltools_0.3.6          MASS_7.3-50             
-[37] assertthat_0.2.0         softImpute_1.4          
-[39] colorspace_1.3-2         stringi_1.2.2           
-[41] Rmosek_8.0.69            lazyeval_0.2.1          
-[43] munsell_0.4.3            doParallel_1.0.11       
-[45] pscl_1.5.2               truncnorm_1.0-8         
-[47] SQUAREM_2017.10-1        ExtremeDeconvolution_1.3
-[49] R.oo_1.22.0             </code></pre>
+[29] magrittr_1.5             whisker_0.3-2           
+[31] scales_0.5.0             backports_1.1.2         
+[33] codetools_0.2-15         htmltools_0.3.6         
+[35] MASS_7.3-50              assertthat_0.2.0        
+[37] softImpute_1.4           colorspace_1.3-2        
+[39] stringi_1.2.2            Rmosek_8.0.69           
+[41] lazyeval_0.2.1           munsell_0.4.3           
+[43] doParallel_1.0.11        pscl_1.5.2              
+[45] truncnorm_1.0-8          SQUAREM_2017.10-1       
+[47] ExtremeDeconvolution_1.3 R.oo_1.22.0             </code></pre>
 </div>
 
 <!-- Adjust MathJax settings so that all math formulae are shown using
