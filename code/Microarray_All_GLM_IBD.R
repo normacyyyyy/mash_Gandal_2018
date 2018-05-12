@@ -56,23 +56,48 @@ AAD_datMeta = datMeta[,c("Study", "Subject","Group")]; rm(datMeta)
 AAD_datProbes = datProbes; rm(datProbes)
 levels(AAD_datMeta$Group)[levels(AAD_datMeta$Group)=="ETOH"] = "AAD"
 
+# IBD
+files = dir("data/working_data/Microarray/03_NormalizedBalanced_ComBat_CR_cleaned/", pattern="_CR_"); files = files[grep("_IBD_",files)]
+n=length(files)
+IBD_multiExpr = vector(mode="list",length = n)
+for(i in 1:n) {
+  load(paste("data/working_data/Microarray/03_NormalizedBalanced_ComBat_CR_cleaned/", files[[i]], sep=""))
+  IBD_multiExpr[[i]]$datExpr = datExpr
+  IBD_multiExpr[[i]]$datMeta = datMeta
+  IBD_multiExpr[[i]]$datProbes = datProbes
+  rm(datExpr,datMeta,datProbes)
+}
+
+genes = intersect(rownames(IBD_multiExpr[[1]]$datExpr), rownames(IBD_multiExpr[[2]]$datExpr))
+for(i in 1:n){IBD_multiExpr[[i]]$datExpr = IBD_multiExpr[[i]]$datExpr[match(genes,rownames(IBD_multiExpr[[i]]$datExpr)),]}
+
+IBD_datExpr = data.frame(row.names = genes)
+IBD_datMeta=data.frame(Study=NA, Subject=NA, Group=NA)
+for(i in 1:n) {
+  IBD_datExpr = cbind(IBD_datExpr, IBD_multiExpr[[i]]$datExpr)
+  IBD_multiExpr[[i]]$datMeta$Subject = rownames(IBD_multiExpr[[i]]$datMeta)
+  IBD_datMeta = rbind(IBD_datMeta, IBD_multiExpr[[i]]$datMeta[,c("Study", "Subject","Group")])
+}
+IBD_datMeta = IBD_datMeta[-1,]
+IBD_datMeta$Group = factor(IBD_datMeta$Group)
+
 # Compile
-multiExpr = vector(mode="list", length=4)
+multiExpr = vector(mode="list", length=5)
 multiExpr[[1]]$datExpr = ASD_datExpr;  multiExpr[[1]]$datMeta = ASD_datMeta
 multiExpr[[2]]$datExpr = SCZ_BD_MDD_datExpr; multiExpr[[2]]$datMeta = SCZ_BD_MDD_datMeta
 multiExpr[[3]]$datExpr = MDD_datExpr; multiExpr[[3]]$datMeta = MDD_datMeta
 multiExpr[[4]]$datExpr = AAD_datExpr; multiExpr[[4]]$datMeta = AAD_datMeta
-# multiExpr[[5]]$datExpr = IBD_datExpr; multiExpr[[5]]$datMeta = IBD_datMeta
-names(multiExpr) = c("ASD", "SCZ_BD_MDD", "MDD", "AAD")
+multiExpr[[5]]$datExpr = IBD_datExpr; multiExpr[[5]]$datMeta = IBD_datMeta
+names(multiExpr) = c("ASD", "SCZ_BD_MDD", "MDD", "AAD", "IBD")
 
 genes = intersect(rownames(multiExpr[[1]]$datExpr), rownames(multiExpr[[2]]$datExpr))
-for(i in 3:4){genes = intersect(genes, rownames(multiExpr[[i]]$datExpr))}
+for(i in 3:5){genes = intersect(genes, rownames(multiExpr[[i]]$datExpr))}
 
-for(i in 1:4){multiExpr[[i]]$datExpr = multiExpr[[i]]$datExpr[match(genes, rownames(multiExpr[[i]]$datExpr)),]}
+for(i in 1:5){multiExpr[[i]]$datExpr = multiExpr[[i]]$datExpr[match(genes, rownames(multiExpr[[i]]$datExpr)),]}
 
 AllExpr = data.frame(row.names = genes)
 AllMeta = data.frame(Study=NA, Subject=NA, Group=NA)
-for(i in 1:4) {
+for(i in 1:5) {
   AllExpr = cbind(AllExpr, multiExpr[[i]]$datExpr)
   AllMeta = rbind(AllMeta, multiExpr[[i]]$datMeta)
 }
@@ -80,19 +105,19 @@ AllMeta = AllMeta[-1,]
 AllMeta$Group = factor(AllMeta$Group)
 
 # GLM
-Chat = matrix(NA, nrow=nrow(AllExpr), ncol=6)
-SEmtx = matrix(NA, nrow=nrow(AllExpr), ncol=6)
-DFmtx = matrix(NA, nrow=nrow(AllExpr), ncol=6)
+Chat = matrix(NA, nrow=nrow(AllExpr), ncol=7)
+SEmtx = matrix(NA, nrow=nrow(AllExpr), ncol=7)
+DFmtx = matrix(NA, nrow=nrow(AllExpr), ncol=7)
 for(i in 1:nrow(AllExpr)) {
   if(i%%100==0) print(i)
   expr = as.numeric(AllExpr[i,])
   tryCatch({
     tSummary = summary(lme(expr ~ Group + Study - 1, data = AllMeta, random=~1|Subject, control = list(opt = "optim")))$tTable
-    Chat[i,] = tSummary[1:6, 1]
-    SEmtx[i,] = tSummary[1:6, 2]
-    DFmtx[i,] = tSummary[1:6, 3]
+    Chat[i,] = tSummary[1:7, 1]
+    SEmtx[i,] = tSummary[1:7, 2]
+    DFmtx[i,] = tSummary[1:7, 3]
   }, error=function(e){})
 }
 
-colnames(Chat) = colnames(SEmtx) = colnames(DFmtx) = c('AAD', 'ASD', 'BD', 'CTL','MDD','SCZ')
-saveRDS(list(Chat = Chat, SE = SEmtx, DF = DFmtx), 'data/results/Microarray_compiledGLM.rds')
+colnames(Chat) = colnames(SEmtx) = colnames(DFmtx) = c('AAD', 'ASD', 'BD', 'CTL','IBD','MDD','SCZ')
+saveRDS(list(Chat = Chat, SE = SEmtx, DF = DFmtx), 'data/results/Microarray_compiledGLM_IBD.rds')
