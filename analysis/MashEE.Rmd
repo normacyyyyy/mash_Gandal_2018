@@ -13,7 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r packages}
 library(limma); library(mashr); library(mclust); library(plyr);
-library(flashr); library(colorRamps); library(corrplot)
+library(flashr); library(colorRamps); library(corrplot); library(ggplot2)
 ```
 
 ```{r data}
@@ -125,13 +125,14 @@ The log-likelihood of fit is
 ```{r loglik} 
 get_loglik(mash.model)
 ```
+
 Here is a plot of weights learned:
 ```{r estimated weight}
 options(repr.plot.width=12, repr.plot.height=4)
 barplot(get_estimated_pi(mash.model), las = 2, cex.names = 0.7)
 ```
 
-Check XX covariance matrix
+Check XX covariance matrix:
 
 ```{r XX}
 x           <- mash.model$fitted_g$Ulist[["ED_XX"]]
@@ -154,6 +155,18 @@ for (j in 1:4)
 
 There are `r length(get_significant_results(mash.model))` diferentially expressed genes.
 
+Check pairwise sharing by sign:
+```{r}
+x = get_pairwise_sharing(mash.model, factor=0)
+x[x > 1]    <- 1
+x[x < -1]   <- -1
+colnames(x) <- colnames(data$beta)
+rownames(x) <- colnames(x)
+corrplot.mixed(x, tl.pos="d",upper='color', cl.lim=c(0,1), upper.col=colorRampPalette(rev(c("#D73027","#FC8D59","#FEE090","#FFFFBF",
+                               "#E0F3F8","#91BFDB","#4575B4")))(40),
+               tl.cex=1.2)
+```
+
 Check pairwise sharing by magnitude and sign:
 ```{r}
 x = get_pairwise_sharing(mash.model)
@@ -166,14 +179,42 @@ corrplot.mixed(x, tl.pos="d",upper='color', cl.lim=c(0,1), upper.col=colorRampPa
                tl.cex=1.2)
 ```
 
+* Effects compare with SCZ
+
+```{r}
+CompareSCZ = diag(5)
+CompareSCZ[,2] = -1
+CompareSCZ = CompareSCZ[-2,]
+row.names(CompareSCZ) = colnames(data$beta)[-2]
+```
+
+```{r}
+mash.model.SCZ = mash.model
+mash.model.SCZ$result = mash_compute_posterior_matrices(mash.model, mash.data, A=CompareSCZ, algorithm.version = 'R')
+```
+
 Check pairwise sharing by sign:
 ```{r}
-x = get_pairwise_sharing(mash.model, factor=0)
+x = get_pairwise_sharing(mash.model.SCZ, factor=0)
 x[x > 1]    <- 1
 x[x < -1]   <- -1
-colnames(x) <- colnames(data$beta)
+colnames(x) <- row.names(CompareSCZ)
 rownames(x) <- colnames(x)
 corrplot.mixed(x, tl.pos="d",upper='color', cl.lim=c(0,1), upper.col=colorRampPalette(rev(c("#D73027","#FC8D59","#FEE090","#FFFFBF",
                                "#E0F3F8","#91BFDB","#4575B4")))(40),
                tl.cex=1.2)
 ```
+
+Check pairwise sharing by magnitude and sign:
+```{r}
+x = get_pairwise_sharing(mash.model.SCZ)
+x[x > 1]    <- 1
+x[x < -1]   <- -1
+colnames(x) <- row.names(CompareSCZ)
+rownames(x) <- colnames(x)
+corrplot.mixed(x, tl.pos="d",upper='color', cl.lim=c(0,1), upper.col=colorRampPalette(rev(c("#D73027","#FC8D59","#FEE090","#FFFFBF",
+                               "#E0F3F8","#91BFDB","#4575B4")))(40),
+               tl.cex=1.2)
+```
+
+
